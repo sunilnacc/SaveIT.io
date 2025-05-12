@@ -33,7 +33,7 @@ const Header: React.FC = () => {
       toast({ title: "Logged Out", description: "You have been successfully logged out." });
       router.push('/login');
     } catch (error) {
-      console.error("Logout failed:", error);
+      // console.error("Logout failed:", error);
       toast({ title: "Logout Failed", description: (error as Error).message, variant: "destructive" });
     }
   };

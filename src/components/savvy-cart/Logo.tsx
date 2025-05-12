@@ -15,8 +15,8 @@ const Logo: React.FC<LogoProps> = ({ className, size = 'medium' }) => {
 
   return (
     <div className={`font-bold ${textSizeClass} ${className}`}>
-      <span className="neon-green-text">Savvy</span>
-      <span className="neon-blue-text">Cart</span>
+      <span className="neon-green-text">Save</span>
+      <span className="neon-blue-text">IT.io</span>
     </div>
   );
 };

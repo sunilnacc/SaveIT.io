@@ -52,7 +52,7 @@ export default function DashboardPage() {
       );
       setProducts(flattenedProducts);
     } catch (error) {
-      console.error("Failed to fetch products:", error);
+      // console.error("Failed to fetch products:", error);
       toast({
         title: "Search Error",
         description: "Could not fetch products. Please try again.",
@@ -119,7 +119,7 @@ export default function DashboardPage() {
       const result = await getSavingsSuggestions({ cartItems: aiCartItems });
       setSavingsSuggestions(result.suggestions || []);
     } catch (error) {
-      console.error("Failed to fetch savings suggestions:", error);
+      // console.error("Failed to fetch savings suggestions:", error);
       toast({
         title: "AI Error",
         description: "Could not fetch savings suggestions.",
@@ -196,7 +196,12 @@ export default function DashboardPage() {
             });
           }
         } catch (aiError) {
-          console.error("AI equivalency check error for", product.name, aiError);
+          // console.error("AI equivalency check error for", product.name, aiError);
+          toast({
+            title: "AI Equivalency Check Error",
+            description: `Could not check equivalency for ${product.name}.`,
+            variant: "destructive",
+          });
           // Optionally add with a note about failed check if names are very similar
         }
       }
@@ -236,7 +241,7 @@ export default function DashboardPage() {
             )}
              {!isLoadingSearch && products.length === 0 && !searchQuery && (
               <div className="text-center text-muted-foreground py-10">
-                <h2 className="text-2xl font-semibold mb-2">Welcome to SavvyCart!</h2>
+                <h2 className="text-2xl font-semibold mb-2">Welcome to SaveIT.io!</h2>
                 <p>Start by searching for your favorite grocery items.</p>
               </div>
             )}

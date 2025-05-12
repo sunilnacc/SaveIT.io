@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'SavvyCart',
+  title: 'SaveIT.io',
   description: 'Compare Smart. Save Big.',
 };
 

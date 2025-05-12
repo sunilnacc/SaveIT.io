@@ -31,7 +31,7 @@ export default function LoginPage() {
       toast({ title: 'Login Successful', description: `Welcome back, ${user.email}!` });
       router.push('/dashboard');
     } catch (error) {
-      console.error("Login failed:", error);
+      // console.error("Login failed:", error);
       const firebaseError = error as FirebaseError;
       let errorMessage = "Failed to login. Please check your credentials.";
       if (firebaseError.code === 'auth/user-not-found' || firebaseError.code === 'auth/wrong-password' || firebaseError.code === 'auth/invalid-credential') {
@@ -49,7 +49,7 @@ export default function LoginPage() {
           <div className="mx-auto mb-4">
             <Logo size="medium" />
           </div>
-          <CardTitle className="text-2xl">Login to SavvyCart</CardTitle>
+          <CardTitle className="text-2xl">Login to SaveIT.io</CardTitle>
           <CardDescription>Enter your credentials to access your account.</CardDescription>
         </CardHeader>
         <CardContent>

@@ -37,7 +37,7 @@ export default function SignupPage() {
       toast({ title: 'Signup Successful', description: `Welcome, ${user.email}! Your account has been created.` });
       router.push('/dashboard');
     } catch (error) {
-      console.error("Signup failed:", error);
+      // console.error("Signup failed:", error);
        const firebaseError = error as FirebaseError;
       let errorMessage = "Failed to create account. Please try again.";
       if (firebaseError.code === 'auth/email-already-in-use') {
@@ -58,7 +58,7 @@ export default function SignupPage() {
             <Logo size="medium" />
           </div>
           <CardTitle className="text-2xl">Create an Account</CardTitle>
-          <CardDescription>Join SavvyCart to start saving on your groceries.</CardDescription>
+          <CardDescription>Join SaveIT.io to start saving on your groceries.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

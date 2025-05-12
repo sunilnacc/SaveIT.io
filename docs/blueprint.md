@@ -1,4 +1,4 @@
-# **App Name**: SavvyCart
+# **App Name**: SaveIT.io
 
 ## Core Features:
 

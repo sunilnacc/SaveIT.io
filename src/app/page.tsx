@@ -36,7 +36,7 @@ export default function SplashScreen() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-lg text-muted-foreground">Loading SavvyCart...</p>
+        <p className="mt-4 text-lg text-muted-foreground">Loading SaveIT.io...</p>
       </div>
     );
   }
