@@ -1,6 +1,6 @@
 
-import { initializeApp, getApps, getApp, type FirebaseOptions } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
+import { initializeApp, getApps, getApp, type FirebaseApp, type FirebaseOptions } from 'firebase/app';
+import { getAuth, type Auth } from 'firebase/auth';
 // import { getFirestore } from 'firebase/firestore';
 // import { getStorage } from 'firebase/storage';
 
@@ -21,59 +21,47 @@ const requiredConfigs: (keyof FirebaseOptions)[] = [
   'projectId',
 ];
 
-const missingConfigs = requiredConfigs.filter(key => !firebaseConfig[key]);
+const missingConfigKeys = requiredConfigs.filter(key => !firebaseConfig[key]);
 
-if (missingConfigs.length > 0) {
-  const errorMessage = `Firebase configuration is missing or incomplete. Please check your .env file and ensure the following NEXT_PUBLIC_FIREBASE_ variables are set: ${missingConfigs.join(', ')}`;
+if (missingConfigKeys.length > 0) {
+  const envVarNames = missingConfigKeys.map(key => {
+    // Construct the expected environment variable name
+    if (key === 'apiKey') return 'NEXT_PUBLIC_FIREBASE_API_KEY';
+    if (key === 'authDomain') return 'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN';
+    if (key === 'projectId') return 'NEXT_PUBLIC_FIREBASE_PROJECT_ID';
+    // Add other mappings if necessary
+    return `NEXT_PUBLIC_FIREBASE_${key.toUpperCase()}`;
+  });
+  const errorMessage = `CRITICAL: Firebase configuration is missing or incomplete. Please ensure the following environment variables are set in your .env file: ${envVarNames.join(', ')}`;
   console.error(errorMessage);
-  // Throw an error during server-side rendering or build time if critical configs are missing.
-  // For client-side, this will also log, but might not halt execution in the same way.
-  if (typeof window === 'undefined') {
-    throw new Error(errorMessage);
-  }
+  // Throw an error to halt execution if critical configs are missing.
+  // This error will be thrown when this module is first imported.
+  throw new Error(errorMessage);
 }
 
 
-// Initialize Firebase
-// Ensure this only runs once
-let app;
-if (!getApps().length) {
-  try {
+let app: FirebaseApp;
+let auth: Auth;
+
+try {
+  if (!getApps().length) {
     app = initializeApp(firebaseConfig);
-  } catch (error) {
-    console.error("Error initializing Firebase app:", error);
-    // Propagate the error if initialization fails, especially for server-side contexts
-    if (typeof window === 'undefined') {
-      throw error;
-    }
+  } else {
+    app = getApp();
   }
-} else {
-  app = getApp();
+} catch (error) {
+  const appInitError = `CRITICAL: Firebase app initialization failed. This can be due to incorrect or incomplete Firebase config values. Error: ${(error as Error).message}`;
+  console.error(appInitError, firebaseConfig);
+  throw new Error(appInitError);
 }
 
-let auth: ReturnType<typeof getAuth>;
-// const db = getFirestore(app);
-// const storage = getStorage(app);
-
-// Initialize Auth only if app was successfully initialized
-if (app) {
-  try {
-    auth = getAuth(app);
-  } catch (error) {
-    console.error("Error initializing Firebase Auth:", error);
-     if (typeof window === 'undefined') {
-      throw error;
-    }
-    // Ensure auth is defined even if it fails, to prevent undefined errors later
-    // Though, this means auth-dependent features will fail.
-    // @ts-ignore
-    auth = undefined; 
-  }
-} else {
-   console.error("Firebase app not initialized. Auth cannot be initialized.");
-   // @ts-ignore
-   auth = undefined;
+try {
+  auth = getAuth(app);
+} catch (error) {
+  // This can be due to invalid API key (e.g., auth/invalid-api-key) even if the key is present but incorrect for the project.
+  const authInitError = `CRITICAL: Firebase Auth initialization failed. This might be due to an invalid API key or other Firebase project misconfiguration. Error: ${(error as Error).message}`;
+  console.error(authInitError);
+  throw new Error(authInitError);
 }
-
 
 export { app, auth /*, db, storage */ };
