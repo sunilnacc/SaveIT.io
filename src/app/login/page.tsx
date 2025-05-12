@@ -2,7 +2,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter }_next_static_css_app_layout_tsx_cbc3b7 from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { signInWithEmail } from '@/lib/firebase/auth';
 import { useAuth } from '@/contexts/AuthContext';
