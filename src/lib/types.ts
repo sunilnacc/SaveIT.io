@@ -1,4 +1,6 @@
 
+import type { User as FirebaseUser } from 'firebase/auth';
+
 export interface Platform {
   name: string;
   sla: string;
@@ -55,4 +57,32 @@ export interface AISavingsCartItem {
 export interface ComparisonItem {
   originalItem: CartItem;
   alternatives: (Product & { equivalencyReason?: string; isEquivalent?: boolean })[];
+}
+
+// Authentication Types
+export interface SignUpCredentials {
+  email: string;
+  password?: string; // Optional if using OAuth providers in future
+  name?: string; // Optional
+}
+
+export interface LoginCredentials {
+  email: string;
+  password?: string; // Optional if using OAuth providers in future
+}
+
+export interface AuthContextType {
+  user: FirebaseUser | null;
+  loading: boolean;
+  error: string | null;
+  setError: (error: string | null) => void;
+  setUser: (user: FirebaseUser | null) => void; // Added to allow manual user set if needed
+}
+
+// Theme Types
+export type Theme = 'light' | 'dark';
+
+export interface ThemeContextType {
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
 }

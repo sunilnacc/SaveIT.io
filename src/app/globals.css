@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -8,8 +9,57 @@ body {
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%; /* Dark Blue/Grey */
-    --foreground: 0 0% 98%; /* White */
+    /* Light Theme (Default) */
+    --background: 0 0% 100%; /* White */
+    --foreground: 240 10% 3.9%; /* Dark Blue/Grey */
+
+    --card: 0 0% 96%; /* Lighter Grey */
+    --card-foreground: 240 10% 3.9%;
+
+    --popover: 0 0% 96%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --primary: 130 90% 45%; /* Slightly less intense Neon Green */
+    --primary-foreground: 0 0% 98%; /* White for contrast on green */
+
+    --secondary: 180 90% 45%; /* Slightly less intense Neon Blue */
+    --secondary-foreground: 0 0% 98%; /* White for contrast on blue */
+
+    --muted: 0 0% 90%; /* Light Grey */
+    --muted-foreground: 240 5% 35%; /* Darker Grey for muted text */
+
+    --accent: 300 90% 50%; /* Purple */
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84% 60%; /* Red */
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 85%; /* Grey border */
+    --input: 0 0% 85%; /* Grey input background */
+    --ring: 130 90% 45%; /* Neon Green for focus rings */
+
+    --radius: 0.5rem;
+
+    --chart-1: 130 90% 45%;
+    --chart-2: 180 90% 45%;
+    --chart-3: 300 90% 50%;
+    --chart-4: 43 74% 50%; /* Adjusted for light theme */
+    --chart-5: 27 87% 50%; /* Adjusted for light theme */
+
+    --sidebar-background: 0 0% 98%; /* Very Light Grey / White */
+    --sidebar-foreground: 240 10% 3.9%;
+    --sidebar-primary: 130 90% 45%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 180 90% 45%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 130 90% 45%;
+  }
+
+  .dark {
+    /* Dark Theme */
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
 
     --card: 240 6% 10%;
     --card-foreground: 0 0% 98%;
@@ -35,55 +85,7 @@ body {
     --border: 240 4% 18%;
     --input: 240 4% 18%;
     --ring: 130 100% 50%; /* Neon Green for focus rings */
-
-    --radius: 0.5rem;
-
-    --chart-1: 130 100% 50%;
-    --chart-2: 180 100% 50%;
-    --chart-3: 300 100% 45%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-
-    --sidebar-background: 240 8% 6%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 130 100% 50%;
-    --sidebar-primary-foreground: 0 0% 5%;
-    --sidebar-accent: 180 100% 50%;
-    --sidebar-accent-foreground: 0 0% 5%;
-    --sidebar-border: 240 4% 12%;
-    --sidebar-ring: 130 100% 50%;
-  }
-
-  .dark {
-    /* Keeping dark theme variables consistent with root for now, as root is already dark. */
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
-
-    --card: 240 6% 10%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 240 6% 10%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 130 100% 50%;
-    --primary-foreground: 0 0% 5%;
-
-    --secondary: 180 100% 50%;
-    --secondary-foreground: 0 0% 5%;
-
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 65%;
-
-    --accent: 300 100% 45%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 240 4% 18%;
-    --input: 240 4% 18%;
-    --ring: 130 100% 50%;
-
+    
     --chart-1: 130 100% 50%;
     --chart-2: 180 100% 50%;
     --chart-3: 300 100% 45%;
@@ -107,8 +109,6 @@ body {
   }
   body {
     @apply bg-background text-foreground;
-    /* Ensure dark theme is applied by default */
-    @apply dark;
   }
 }
 
