@@ -9,7 +9,7 @@ import SavingsSuggestionsPanel from '@/components/savvy-cart/SavingsSuggestionsP
 import ComparisonView from '@/components/savvy-cart/ComparisonView';
 import type { Product, CartItem, ApiResponse, SavingsSuggestion, ProductEquivalencyCheckItem, AISavingsCartItem, ComparisonItem } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShoppingBasket, SearchX } from 'lucide-react';
 import { checkProductEquivalency } from '@/ai/flows/product-equivalency';
 import { getSavingsSuggestions } from '@/ai/flows/savings-suggestion';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -35,7 +35,7 @@ export default function DashboardPage() {
   const fetchProducts = useCallback(async (query: string) => {
     if (!query) return;
     setIsLoadingSearch(true);
-    setProducts([]); // Clear previous results
+    setProducts([]); 
     try {
       const response = await fetch(`${API_BASE_URL}?lat=${LAT}&lon=${LON}&type=groupsearch&query=${encodeURIComponent(query)}`);
       if (!response.ok) {
@@ -45,14 +45,13 @@ export default function DashboardPage() {
       const flattenedProducts: Product[] = data.flatMap(group => 
         group.data.map(p => ({
           ...p,
-          id: String(p.id || p.xid || Math.random().toString(36).substring(7)), // Ensure ID is string
+          id: String(p.id || p.xid || Math.random().toString(36).substring(7)), 
           mrp: p.mrp,
           offer_price: p.offer_price
         }))
       );
       setProducts(flattenedProducts);
     } catch (error) {
-      // console.error("Failed to fetch products:", error);
       toast({
         title: "Search Error",
         description: "Could not fetch products. Please try again.",
@@ -111,7 +110,7 @@ export default function DashboardPage() {
       const aiCartItems: AISavingsCartItem[] = cartItems.map(item => ({
         name: item.name,
         brand: item.brand,
-        quantity: `${item.cartQuantity} x ${item.quantity}`,
+        quantity: `${item.cartQuantity} x ${item.quantity}`, // e.g. "2 x 1kg"
         price: parseFloat(String(item.offer_price || item.mrp)),
         platform: item.platform.name,
       }));
@@ -119,7 +118,6 @@ export default function DashboardPage() {
       const result = await getSavingsSuggestions({ cartItems: aiCartItems });
       setSavingsSuggestions(result.suggestions || []);
     } catch (error) {
-      // console.error("Failed to fetch savings suggestions:", error);
       toast({
         title: "AI Error",
         description: "Could not fetch savings suggestions.",
@@ -131,23 +129,27 @@ export default function DashboardPage() {
   }, [cartItems, toast]);
 
   useEffect(() => {
-    // Debounce or delay fetching suggestions
     const timer = setTimeout(() => {
       if (cartItems.length > 0) {
         fetchSavingsSuggestions();
       } else {
         setSavingsSuggestions([]);
       }
-    }, 1500); // Fetch suggestions 1.5s after cart changes
+    }, 1500); 
     return () => clearTimeout(timer);
   }, [cartItems, fetchSavingsSuggestions]);
 
 
   const handleCompareCart = async () => {
-    if (products.length === 0 || cartItems.length === 0) {
-      toast({ title: "Cannot Compare", description: "Please search for products and add items to cart first.", variant: "destructive" });
+    if (cartItems.length === 0) {
+      toast({ title: "Cart is Empty", description: "Add items to your cart to compare prices.", variant: "default" });
       return;
     }
+    if (products.length === 0 && cartItems.length > 0) {
+        toast({ title: "No Search Results", description: "Please search for products to enable comprehensive comparison.", variant: "default" });
+        // Proceed with cart items only, alternatives will be empty or limited
+    }
+
     setIsComparing(true);
     setShowComparisonView(true);
     setComparisonResults([]);
@@ -162,16 +164,11 @@ export default function DashboardPage() {
       };
 
       const alternatives: (Product & { equivalencyReason?: string; isEquivalent?: boolean })[] = [];
-      // Find alternatives from the general product search results
+      
       for (const product of products) {
-        // Skip if it's the same item from the same platform
         if (product.id === cartItem.id && product.platform.name === cartItem.platform.name) {
           continue;
         }
-
-        // Basic filter: same brand, or if item is generic, potentially other brands too.
-        // For now, let's be a bit loose or use AI for deeper check.
-        // Let's consider products with similar names or if AI confirms equivalency
         
         const productForEquivalency: ProductEquivalencyCheckItem = {
           name: product.name,
@@ -185,9 +182,6 @@ export default function DashboardPage() {
             product2: productForEquivalency,
           });
           
-          // Add to alternatives if AI says it's equivalent OR if names are very similar (fallback)
-          // For this demo, let's be more inclusive if AI says equivalent or names are quite similar
-          // This logic can be tuned.
           if (equivalency.equivalent || product.name.toLowerCase().includes(cartItem.name.toLowerCase().substring(0,5))) {
              alternatives.push({
               ...product,
@@ -196,17 +190,22 @@ export default function DashboardPage() {
             });
           }
         } catch (aiError) {
-          // console.error("AI equivalency check error for", product.name, aiError);
           toast({
-            title: "AI Equivalency Check Error",
-            description: `Could not check equivalency for ${product.name}.`,
+            title: "AI Equivalency Error",
+            description: `Could not check equivalency for ${product.name}. Comparing by name.`,
             variant: "destructive",
           });
-          // Optionally add with a note about failed check if names are very similar
+           // Fallback to name similarity if AI fails
+           if (product.name.toLowerCase().includes(cartItem.name.toLowerCase().substring(0,5))) {
+            alternatives.push({
+             ...product,
+             isEquivalent: false, // Mark as not AI-verified
+             equivalencyReason: "AI check failed; similar name.",
+           });
+         }
         }
       }
       
-      // Sort alternatives by price (offer_price or mrp)
       alternatives.sort((a, b) => parseFloat(String(a.offer_price || a.mrp)) - parseFloat(String(b.offer_price || b.mrp)));
 
       newComparisonResults.push({ originalItem: cartItem, alternatives });
@@ -226,23 +225,30 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-          <ScrollArea className="lg:col-span-2 h-[calc(100vh-200px)] pr-2"> {/* Adjust height as needed */}
+          <ScrollArea className="lg:col-span-2 h-[calc(100vh-220px)] min-h-[400px] pr-2"> {/* Adjust height as needed */}
             {isLoadingSearch && (
-              <div className="flex justify-center items-center py-10">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <p className="ml-4 text-lg">Searching for products...</p>
+              <div className="flex flex-col justify-center items-center py-10 min-h-[300px]">
+                <Loader2 className="h-16 w-16 animate-spin text-primary" />
+                <p className="ml-4 mt-4 text-xl text-muted-foreground">Searching for products...</p>
               </div>
             )}
             {!isLoadingSearch && products.length > 0 && (
               <ProductList products={products} onAddToCart={handleAddToCart} />
             )}
             {!isLoadingSearch && products.length === 0 && searchQuery && (
-              <p className="text-center text-muted-foreground py-10 text-lg">No products found for "{searchQuery}". Try a different search.</p>
+               <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center min-h-[300px] border-2 border-dashed border-border rounded-lg bg-card/30">
+                <SearchX className="h-20 w-20 text-primary mb-6" />
+                <h2 className="text-3xl font-semibold mb-3 text-foreground">No Products Found</h2>
+                <p className="text-lg">We couldn't find any products matching "{searchQuery}".</p>
+                <p className="text-lg">Try a different search term or check spelling.</p>
+              </div>
             )}
              {!isLoadingSearch && products.length === 0 && !searchQuery && (
-              <div className="text-center text-muted-foreground py-10">
-                <h2 className="text-2xl font-semibold mb-2">Welcome to SaveIT.io!</h2>
-                <p>Start by searching for your favorite grocery items.</p>
+              <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center min-h-[300px] border-2 border-dashed border-border rounded-lg bg-card/30">
+                <ShoppingBasket className="h-20 w-20 text-primary mb-6" />
+                <h2 className="text-3xl font-semibold mb-3 text-foreground">Welcome to SaveIT.io!</h2>
+                <p className="text-lg mb-1">Your smart grocery comparison companion.</p>
+                <p className="text-lg">Search for products above to find the best prices and start saving.</p>
               </div>
             )}
           </ScrollArea>
@@ -259,8 +265,12 @@ export default function DashboardPage() {
           </div>
         </div>
       </main>
-      {showComparisonView && comparisonResults && (
-          <ComparisonView comparisonResults={comparisonResults} onClose={() => setShowComparisonView(false)} />
+      {showComparisonView && (
+          <ComparisonView 
+            comparisonResults={comparisonResults} 
+            onClose={() => setShowComparisonView(false)} 
+            isLoading={isComparing}
+          />
       )}
     </div>
   );
