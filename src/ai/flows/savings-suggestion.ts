@@ -78,7 +78,7 @@ const savingsSuggestionFlow = ai.defineFlow(
   async input => {
     const {output} = await savingsSuggestionPrompt(input);
     // Ensure output is not null and suggestions array exists
-    if (output &amp;&amp; output.suggestions) {
+    if (output && output.suggestions) {
         return output;
     }
     // Fallback to empty suggestions if AI output is problematic
