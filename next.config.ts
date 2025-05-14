@@ -1,3 +1,4 @@
+
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
@@ -12,7 +13,13 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'picsum.photos',
+        hostname: 'picsum.photos', // Kept for existing, can be removed if fully migrated
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co', // Added for new placeholders
         port: '',
         pathname: '/**',
       },
@@ -33,7 +40,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'cdn.grofers.com',
+        hostname: 'cdn.grofers.com', // Blinkit's old CDN, still might be in use for some images
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'blinkit-styleguide.s3.ap-south-1.amazonaws.com', // Blinkit new CDN
         pathname: '/**',
       },
       {
@@ -48,7 +60,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'd2chhaxkq6tvay.cloudfront.net',
+        hostname: 'd2chhaxkq6tvay.cloudfront.net', // Dunzo CDN
         pathname: '/**',
       },
        {

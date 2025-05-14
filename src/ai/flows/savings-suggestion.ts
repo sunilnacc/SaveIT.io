@@ -1,7 +1,9 @@
+
 'use server';
 
 /**
  * @fileOverview This file defines a Genkit flow for providing smart savings suggestions based on the user's cart.
+ * It considers item prices, potential platform fees, delivery costs, and minimum order value (MOV) manipulations.
  *
  * - getSavingsSuggestions - A function that takes a cart and returns savings suggestions.
  * - SavingsSuggestionInput - The input type for the getSavingsSuggestions function.
@@ -14,19 +16,25 @@ import {z} from 'genkit';
 const CartItemSchema = z.object({
   name: z.string().describe('The name of the product.'),
   brand: z.string().describe('The brand of the product.'),
-  quantity: z.string().describe('The quantity of the product (e.g., "1kg", "500ml", "2 x 1 dozen").'),
+  quantity: z.string().describe('The quantity description of one unit of the product (e.g., "1kg", "500ml", "1 dozen").'),
   price: z.number().describe('The price of one unit of the product.'),
   platform: z.string().describe('The platform where the product is available (e.g., Swiggy, Zepto).'),
+  cartQuantity: z.number().describe('The number of units of this product in the cart.'),
 });
 
 const SavingsSuggestionInputSchema = z.object({
   cartItems: z.array(CartItemSchema).describe('The items currently in the user\'s cart.'),
+  // Optionally, pass current total cart value if needed for more precise MOV checks by AI, though AI can also infer.
+  // currentCartTotalValue: z.number().optional().describe('The total value of items currently in the cart.'), 
 });
 export type SavingsSuggestionInput = z.infer<typeof SavingsSuggestionInputSchema>;
 
+const SuggestionTypeSchema = z.enum(['cost', 'mov_alert', 'convenience', 'fee_optimization']);
+
 const SavingsSuggestionSchema = z.object({
-  suggestion: z.string().describe('A specific, actionable suggestion for saving money on the current cart.'),
-  estimatedSavings: z.number().describe('The estimated amount of money the user would save by following this suggestion. Can be 0 if it\'s a general tip without direct quantifiable savings for a specific item.'),
+  suggestion: z.string().describe('A specific, actionable suggestion for saving money or optimizing the current cart.'),
+  estimatedSavings: z.number().describe('The estimated amount of money the user would save by following this suggestion. Can be 0 if it\'s a general tip or alert.'),
+  type: SuggestionTypeSchema.optional().describe('The category of the suggestion (e.g., cost saving, MOV alert, fee optimization).'),
 });
 
 const SavingsSuggestionOutputSchema = z.object({
@@ -42,30 +50,34 @@ const savingsSuggestionPrompt = ai.definePrompt({
   name: 'savingsSuggestionPrompt',
   input: {schema: SavingsSuggestionInputSchema},
   output: {schema: SavingsSuggestionOutputSchema},
-  prompt: `You are an expert grocery savings advisor, the "SaveIT.io Assistant". Your goal is to provide actionable and insightful savings suggestions for the user's current grocery cart.
+  prompt: `You are SaveIT.io's expert savings advisor. Your goal is to provide actionable insights for the user's grocery cart, considering item prices, potential delivery fees, platform fees, and minimum order value (MOV) tactics.
 
 User's Cart:
 {{#each cartItems}}
-- {{quantity}} of {{brand}} {{name}} (from {{platform}}) @ ₹{{price}} each
+- {{cartQuantity}} x {{brand}} {{name}} ({{quantity}}) from {{platform}} @ ₹{{price}} each
 {{/each}}
 
-Please provide a list of savings suggestions. For each suggestion:
-1.  Clearly describe the suggested action (e.g., "Switch to Platform X for Item Y", "Consider Store Brand Z for Item A", "Bundle items B and C on Platform P for potential delivery savings or meeting order minimums").
-2.  Estimate the monetary savings if the user follows the suggestion. If it's a general tip without direct savings on a specific item (like bundling for delivery), savings can be 0 but explain the potential benefit.
-3.  Prioritize suggestions that offer significant savings or convenience.
+Known Quick Commerce Platform Characteristics (General Knowledge - Assume these unless item data strongly contradicts):
+- Swiggy Instamart, Zepto, Blinkit: Fast delivery, often have delivery/platform fees. MOVs can start low (e.g., ₹99-₹199) but might increase for users over time (e.g. to ₹299-₹499).
+- DMart Ready, BigBasket, Jiomart: Potentially lower item prices for bulk, may have higher MOVs for free delivery, delivery might be slower.
+
+Please provide a list of 3-5 high-quality savings suggestions. For each suggestion:
+1.  Clearly describe the action.
+2.  Estimate monetary savings if applicable (can be 0 for alerts/general tips).
+3.  Specify the suggestion type (cost, mov_alert, convenience, fee_optimization).
 
 Consider these strategies:
-*   **Cheaper Platforms:** Identify if any cart items are available cheaper on other known grocery platforms (e.g., if an item is on Swiggy, consider if Zepto, Blinkit, BBNow, DMart might have it cheaper - you don't have live prices for them, but can suggest based on general knowledge if an item is commonly cheaper elsewhere or if a platform is known for specific categories).
-*   **Equivalent Alternatives:** Suggest cheaper, equivalent brand alternatives if available (e.g., a different well-known brand of the same product type and size that's often more economical).
-*   **Store Brands:** If a significantly cheaper store brand equivalent likely exists for a product (e.g., for staples like flour, sugar, pulses), suggest checking for it as an option.
-*   **Bundle Deals/Platform Consolidation:** If buying multiple items from a single alternative platform could lead to overall savings (e.g., by meeting a free delivery threshold, or if a platform offers bundle discounts). You do not have specific delivery fee data, so frame this as a general tip to check.
-*   **Slightly Different Quantities/Pack Sizes:** If a slightly larger or smaller pack size of the SAME product often offers better value per unit (e.g., buying a 5kg bag of rice vs. five 1kg bags), mention this as a possibility.
-*   **Focus on High-Impact Suggestions:** If there are many small potential savings, try to group them or focus on the ones with the most impact.
+*   **Platform Fee Optimization**: If items are spread across multiple fast-delivery platforms, suggest consolidating to one to reduce cumulative delivery/platform fees. (e.g., "Consider moving items from Zepto to your Swiggy order to save on one set of platform/delivery fees.") Type: 'fee_optimization'.
+*   **MOV Alerts & Strategies**:
+    *   If the cart total on a platform is just below its typical MOV (e.g., ₹170 on a ₹199 MOV platform), alert the user they might be prompted to add more. Suggest checking if a slightly cheaper item exists to meet MOV or if it's better to pay the small-order fee if available. (e.g., "Your Swiggy subtotal is close to their usual ₹199 minimum. You might be charged a small order fee or prompted to add more. See if a small essential item bridges the gap, or if paying the fee is cheaper than buying unneeded items."). Type: 'mov_alert'.
+    *   Warn if a user seems to be adding items *just* to meet a high MOV, especially if those items are not on their typical shopping list (requires history, but can be a general warning). (e.g., "Alert: Adding low-priority items just to meet a high minimum order value can lead to overspending. Double-check if you really need them."). Type: 'mov_alert'.
+*   **Cheaper Platform Alternatives (Holistic)**: If an item or the whole cart could be significantly cheaper on another platform *after considering potential fees and MOV*. (e.g., "Staples like rice and flour are often cheaper on BigBasket or DMart if you can meet their MOV and wait for scheduled delivery. This could save ~₹{{amount}} on those items."). Type: 'cost'.
+*   **Equivalent Product Alternatives**: Suggest cheaper, equivalent brands or sizes. (e.g., "Switching to Brand X for [Product Y] could save you ₹{{amount}}."). Type: 'cost'.
+*   **Bundle Deals (General Tip)**: "Check if [Platform X] offers bundle deals for items already in your cart, or if adding a related item unlocks a discount." Type: 'cost'.
 
-Be concise and actionable. Limit to 3-5 high-quality suggestions.
+Prioritize actionable advice that leads to real savings or avoids overspending. Be concise.
 
-Output format:
-- An array of suggestions, each with a 'suggestion' string and 'estimatedSavings' number.
+Output format: An array of suggestions, each with 'suggestion', 'estimatedSavings', and 'type'.
 `,
 });
 

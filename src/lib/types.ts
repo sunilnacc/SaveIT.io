@@ -7,11 +7,16 @@ export interface Platform {
   icon: string;
   open: boolean;
   storeId: string;
+  // Added for more detailed cost analysis
+  deliveryFee?: number;
+  platformFee?: number;
+  minOrderValue?: number;
+  discount?: { type: 'percentage' | 'fixed'; value: number; threshold?: number }; // Example discount structure
 }
 
 export interface Product {
   id: string; // Can be string or number from API
-  name: string;
+  name:string;
   brand: string;
   available: boolean;
   images: string[];
@@ -22,6 +27,8 @@ export interface Product {
   deeplink: string;
   platform: Platform;
   inventory?: number | { total?: number; remaining?: number; message?: string; in_stock?: boolean };
+  // Calculated fields for comparison
+  effectivePrice?: number; 
 }
 
 export interface ApiProductGroup {
@@ -38,6 +45,7 @@ export interface CartItem extends Product {
 export interface SavingsSuggestion {
   suggestion: string;
   estimatedSavings: number;
+  type?: 'cost' | 'mov_alert' | 'convenience'; // Added to categorize suggestions
 }
 
 // For AI Flow integration
@@ -49,14 +57,22 @@ export interface ProductEquivalencyCheckItem {
 export interface AISavingsCartItem {
   name: string;
   brand: string;
-  quantity: string;
-  price: number;
+  quantity: string; // e.g. "1 unit", "500g" - cartQuantity will be used to multiply
+  price: number; // price per single unit
   platform: string;
+  cartQuantity: number; // how many of this item are in the cart
 }
 
 export interface ComparisonItem {
   originalItem: CartItem;
-  alternatives: (Product & { equivalencyReason?: string; isEquivalent?: boolean })[];
+  alternatives: (Product & { 
+    equivalencyReason?: string; 
+    isEquivalent?: boolean;
+    platformDetails?: Platform; // To access fees for this specific alternative's platform
+    calculatedTotalCost?: number; // Item price * quantity + delivery + platform fee
+    savingsComparedToOriginal?: number;
+    meetsMOV?: boolean; // Does this alternative, if cart moved, meet platform's MOV?
+  })[];
 }
 
 // Authentication Types
@@ -85,4 +101,17 @@ export type Theme = 'light' | 'dark';
 export interface ThemeContextType {
   theme: Theme;
   setTheme: (theme: Theme) => void;
+}
+
+export interface UserPreferences {
+  prioritize: 'cost' | 'speed'; // Example, speed is harder to implement without data
+  // Could add more like preferredPlatforms, etc.
+}
+
+// Mock structure for platform-specific cost details not available from API
+export interface PlatformCostDetails extends Platform {
+  // deliveryFee: number; // Now part of Platform
+  // platformFee: number; // Now part of Platform
+  // minOrderValue: number; // Now part of Platform
+  // discount?: { type: 'percentage' | 'fixed'; value: number; threshold?: number }; // Now part of Platform
 }

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -7,7 +8,7 @@ import ProductList from '@/components/savvy-cart/ProductList';
 import CartPanel from '@/components/savvy-cart/CartPanel';
 import SavingsSuggestionsPanel from '@/components/savvy-cart/SavingsSuggestionsPanel';
 import ComparisonView from '@/components/savvy-cart/ComparisonView';
-import type { Product, CartItem, ApiResponse, SavingsSuggestion, ProductEquivalencyCheckItem, AISavingsCartItem, ComparisonItem } from '@/lib/types';
+import type { Product, CartItem, ApiResponse, SavingsSuggestion, ProductEquivalencyCheckItem, AISavingsCartItem, ComparisonItem, PlatformCostDetails, UserPreferences } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, ShoppingBasket, SearchX } from 'lucide-react';
 import { checkProductEquivalency } from '@/ai/flows/product-equivalency';
@@ -17,6 +18,26 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 const API_BASE_URL = 'https://qp94doiea4.execute-api.ap-south-1.amazonaws.com/default/qc';
 const LAT = '12.9038';
 const LON = '77.6648';
+
+// Mock platform cost details (since API doesn't provide them)
+// In a real app, this might come from a configuration service or be user-adjustable
+const PLATFORM_COST_CONFIG: Record<string, PlatformCostDetails> = {
+  'Swiggy Instamart': { name: 'Swiggy Instamart', icon: '', sla: '', open: true, storeId: '', deliveryFee: 25, platformFee: 10, minOrderValue: 199 },
+  'Zepto': { name: 'Zepto', icon: '', sla: '', open: true, storeId: '', deliveryFee: 30, platformFee: 5, minOrderValue: 149 },
+  'Blinkit': { name: 'Blinkit', icon: '', sla: '', open: true, storeId: '', deliveryFee: 20, platformFee: 10, minOrderValue: 249 },
+  'Dunzo': { name: 'Dunzo', icon: '', sla: '', open: true, storeId: '', deliveryFee: 35, platformFee: 0, minOrderValue: 99 },
+  'BigBasket': { name: 'BigBasket', icon: '', sla: '', open: true, storeId: '', deliveryFee: 50, platformFee: 0, minOrderValue: 500, discount: {type: 'fixed', value: 50, threshold: 1000} },
+  'BBNow': { name: 'BBNow', icon: '', sla: '', open: true, storeId: '', deliveryFee: 25, platformFee: 5, minOrderValue: 199 },
+  'DMart': { name: 'DMart', icon: '', sla: '', open: true, storeId: '', deliveryFee: 40, platformFee: 0, minOrderValue: 799 },
+  'JioMart': { name: 'JioMart', icon: '', sla: '', open: true, storeId: '', deliveryFee: 45, platformFee: 0, minOrderValue: 399 },
+   // Default for platforms not explicitly listed
+  'default': { name: 'Other Platform', icon: '', sla: '', open: true, storeId: '', deliveryFee: 30, platformFee: 5, minOrderValue: 199 },
+};
+
+const getPlatformCosts = (platformName: string): PlatformCostDetails => {
+  return PLATFORM_COST_CONFIG[platformName] || PLATFORM_COST_CONFIG['default'];
+};
+
 
 export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -29,6 +50,8 @@ export default function DashboardPage() {
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [isComparing, setIsComparing] = useState(false);
   const [showComparisonView, setShowComparisonView] = useState(false);
+  const [userPreferences, setUserPreferences] = useState<UserPreferences>({ prioritize: 'cost' });
+
 
   const { toast } = useToast();
 
@@ -47,7 +70,11 @@ export default function DashboardPage() {
           ...p,
           id: String(p.id || p.xid || Math.random().toString(36).substring(7)), 
           mrp: p.mrp,
-          offer_price: p.offer_price
+          offer_price: p.offer_price,
+          platform: { // Augment platform data with cost config
+            ...p.platform,
+            ...getPlatformCosts(p.platform.name),
+          }
         }))
       );
       setProducts(flattenedProducts);
@@ -75,7 +102,12 @@ export default function DashboardPage() {
         updatedCartItems[existingItemIndex].cartQuantity += 1;
         return updatedCartItems;
       }
-      return [...prevCartItems, { ...product, cartQuantity: 1 }];
+      // Ensure the product added to cart also has full platform cost details
+      const platformWithCosts = {
+        ...product.platform,
+        ...getPlatformCosts(product.platform.name)
+      };
+      return [...prevCartItems, { ...product, platform: platformWithCosts, cartQuantity: 1 }];
     });
     toast({
       title: "Added to Cart",
@@ -110,14 +142,16 @@ export default function DashboardPage() {
       const aiCartItems: AISavingsCartItem[] = cartItems.map(item => ({
         name: item.name,
         brand: item.brand,
-        quantity: `${item.cartQuantity} x ${item.quantity}`, // e.g. "2 x 1kg"
+        quantity: item.quantity, 
         price: parseFloat(String(item.offer_price || item.mrp)),
         platform: item.platform.name,
+        cartQuantity: item.cartQuantity,
       }));
       
       const result = await getSavingsSuggestions({ cartItems: aiCartItems });
       setSavingsSuggestions(result.suggestions || []);
     } catch (error) {
+      console.error("AI Suggestion Error:", error);
       toast({
         title: "AI Error",
         description: "Could not fetch savings suggestions.",
@@ -147,7 +181,6 @@ export default function DashboardPage() {
     }
     if (products.length === 0 && cartItems.length > 0) {
         toast({ title: "No Search Results", description: "Please search for products to enable comprehensive comparison.", variant: "default" });
-        // Proceed with cart items only, alternatives will be empty or limited
     }
 
     setIsComparing(true);
@@ -163,9 +196,10 @@ export default function DashboardPage() {
         quantity: cartItem.quantity,
       };
 
-      const alternatives: (Product & { equivalencyReason?: string; isEquivalent?: boolean })[] = [];
+      const alternatives: ComparisonItem['alternatives'] = [];
       
       for (const product of products) {
+        // Skip if it's the exact same item from the same platform
         if (product.id === cartItem.id && product.platform.name === cartItem.platform.name) {
           continue;
         }
@@ -182,11 +216,17 @@ export default function DashboardPage() {
             product2: productForEquivalency,
           });
           
-          if (equivalency.equivalent || product.name.toLowerCase().includes(cartItem.name.toLowerCase().substring(0,5))) {
+          // Ensure product has platform cost details before adding as alternative
+           const platformDetails = getPlatformCosts(product.platform.name);
+           const enrichedProduct = { ...product, platform: { ...product.platform, ...platformDetails } };
+
+
+          if (equivalency.equivalent || product.name.toLowerCase().includes(cartItem.name.toLowerCase().substring(0,5))) { // Fallback name similarity
              alternatives.push({
-              ...product,
+              ...enrichedProduct, 
               isEquivalent: equivalency.equivalent,
               equivalencyReason: equivalency.reason,
+              platformDetails: enrichedProduct.platform, // pass full platform details
             });
           }
         } catch (aiError) {
@@ -195,17 +235,20 @@ export default function DashboardPage() {
             description: `Could not check equivalency for ${product.name}. Comparing by name.`,
             variant: "destructive",
           });
-           // Fallback to name similarity if AI fails
-           if (product.name.toLowerCase().includes(cartItem.name.toLowerCase().substring(0,5))) {
+           if (product.name.toLowerCase().includes(cartItem.name.toLowerCase().substring(0,5))) { // Fallback name similarity
+            const platformDetails = getPlatformCosts(product.platform.name);
+            const enrichedProduct = { ...product, platform: { ...product.platform, ...platformDetails } };
             alternatives.push({
-             ...product,
-             isEquivalent: false, // Mark as not AI-verified
+             ...enrichedProduct,
+             isEquivalent: false, 
              equivalencyReason: "AI check failed; similar name.",
+             platformDetails: enrichedProduct.platform,
            });
          }
         }
       }
       
+      // Sort alternatives by offer price first (further sorting by total cost can happen in ComparisonView)
       alternatives.sort((a, b) => parseFloat(String(a.offer_price || a.mrp)) - parseFloat(String(b.offer_price || b.mrp)));
 
       newComparisonResults.push({ originalItem: cartItem, alternatives });
@@ -217,7 +260,7 @@ export default function DashboardPage() {
 
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <main className="flex-grow container mx-auto p-4 md:p-6">
         <div className="mb-8 mt-4 flex justify-center">
@@ -225,7 +268,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-          <ScrollArea className="lg:col-span-2 h-[calc(100vh-220px)] min-h-[400px] pr-2"> {/* Adjust height as needed */}
+          <ScrollArea className="lg:col-span-2 h-[calc(100vh-220px)] min-h-[400px] pr-2">
             {isLoadingSearch && (
               <div className="flex flex-col justify-center items-center py-10 min-h-[300px]">
                 <Loader2 className="h-16 w-16 animate-spin text-primary" />
@@ -253,13 +296,14 @@ export default function DashboardPage() {
             )}
           </ScrollArea>
 
-          <div className="lg:col-span-1 lg:sticky lg:top-[calc(var(--header-height,60px)+1.5rem)] self-start"> {/* Sticky cart */}
+          <div className="lg:col-span-1 lg:sticky lg:top-[calc(var(--header-height,60px)+1.5rem)] self-start">
             <CartPanel 
               cartItems={cartItems} 
               onUpdateQuantity={handleUpdateQuantity} 
               onRemoveItem={handleRemoveItem}
               onCompareCart={handleCompareCart}
               isComparing={isComparing}
+              platformCostConfig={PLATFORM_COST_CONFIG} // Pass config to cart panel
             />
             <SavingsSuggestionsPanel suggestions={savingsSuggestions} isLoading={isLoadingSuggestions} />
           </div>
@@ -270,6 +314,7 @@ export default function DashboardPage() {
             comparisonResults={comparisonResults} 
             onClose={() => setShowComparisonView(false)} 
             isLoading={isComparing}
+            platformCostConfig={PLATFORM_COST_CONFIG} // Pass config to comparison view
           />
       )}
     </div>

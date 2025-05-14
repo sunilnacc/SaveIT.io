@@ -19,16 +19,16 @@ body {
     --popover: 0 0% 96%;
     --popover-foreground: 240 10% 3.9%;
 
-    --primary: 130 90% 45%; /* Slightly less intense Neon Green */
+    --primary: 130 90% 45%; /* Neon Green (hsl(130, 100%, 50%) is #39FF14) */
     --primary-foreground: 0 0% 98%; /* White for contrast on green */
 
-    --secondary: 180 90% 45%; /* Slightly less intense Neon Blue */
+    --secondary: 180 90% 45%; /* Neon Blue (hsl(180, 100%, 50%) is #00FFFF) */
     --secondary-foreground: 0 0% 98%; /* White for contrast on blue */
 
     --muted: 0 0% 90%; /* Light Grey */
     --muted-foreground: 240 5% 35%; /* Darker Grey for muted text */
 
-    --accent: 300 90% 50%; /* Purple */
+    --accent: 300 76% 35%; /* Purple closer to #800080 (hsl(300, 100%, 25%) is #800080 but can be too dark for text backgrounds) */
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84% 60%; /* Red */
@@ -42,11 +42,11 @@ body {
 
     --chart-1: 130 90% 45%;
     --chart-2: 180 90% 45%;
-    --chart-3: 300 90% 50%;
-    --chart-4: 43 74% 50%; /* Adjusted for light theme */
-    --chart-5: 27 87% 50%; /* Adjusted for light theme */
+    --chart-3: 300 76% 35%;
+    --chart-4: 43 74% 50%; 
+    --chart-5: 27 87% 50%; 
 
-    --sidebar-background: 0 0% 98%; /* Very Light Grey / White */
+    --sidebar-background: 0 0% 98%; 
     --sidebar-foreground: 240 10% 3.9%;
     --sidebar-primary: 130 90% 45%;
     --sidebar-primary-foreground: 0 0% 98%;
@@ -76,7 +76,7 @@ body {
     --muted: 240 5% 15%;
     --muted-foreground: 240 5% 65%;
 
-    --accent: 300 100% 45%; /* Purple - slightly brighter */
+    --accent: 300 100% 45%; /* Purple - kept brighter for dark theme for visibility, #800080 is hsl(300, 100%, 25%) which is very dark */
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 72% 51%;
