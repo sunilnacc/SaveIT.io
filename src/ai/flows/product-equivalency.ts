@@ -13,7 +13,7 @@ import {z} from 'genkit';
 const ProductSchema = z.object({
   name: z.string().describe('The name of the product.'),
   brand: z.string().optional().describe('The brand of the product.'),
-  quantity: z.string().optional().describe('The quantity of the product.'),
+  quantity: z.string().optional().describe('The quantity of the product (e.g., "1kg", "500ml", "1 pack").'),
 });
 
 const ProductEquivalencyInputSchema = z.object({
@@ -47,13 +47,21 @@ const productEquivalencyPrompt = ai.definePrompt({
   prompt: `You are an expert product comparison agent.
 
 You will determine if two products are equivalent, even if their names are slightly different.
-Consider brand, quantity, and other relevant factors.
+Consider brand, quantity, and other relevant factors like variations in packaging if implied by quantity.
 
-Product 1: {{{product1}}}
-Product 2: {{{product2}}}
+Product 1:
+Name: {{{product1.name}}}
+{{#if product1.brand}}Brand: {{{product1.brand}}}{{/if}}
+{{#if product1.quantity}}Quantity: {{{product1.quantity}}}{{/if}}
+
+Product 2:
+Name: {{{product2.name}}}
+{{#if product2.brand}}Brand: {{{product2.brand}}}{{/if}}
+{{#if product2.quantity}}Quantity: {{{product2.quantity}}}{{/if}}
 
 Determine if the two products are equivalent and provide a reason for your determination.
 Set the 'equivalent' field to true if they are equivalent, and false if they are not.
+Provide a concise reason, e.g., "Same brand and quantity" or "Different brand" or "Different quantity".
 `,
 });
 
