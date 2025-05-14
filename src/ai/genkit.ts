@@ -12,5 +12,5 @@ export const ai = genkit({
   plugins: [googleAI()],
   // Updated to a valid and current model.
   // Ensure GOOGLE_API_KEY is set in your environment variables.
-  model: 'googleai/gemini-1.5-flash-latest', 
+  model: 'googleai/gemini-2.5-flash-preview-04-17', 
 });
