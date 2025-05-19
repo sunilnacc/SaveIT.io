@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,97 +8,118 @@ body {
 
 @layer base {
   :root {
-    /* Light Theme (Default) */
-    --background: 0 0% 100%; /* White */
-    --foreground: 240 10% 3.9%; /* Dark Blue/Grey */
+    /* Sage & Earthy Theme */
+    --background: 60 30% 98%; /* Off-white with warm tint */
+    --foreground: 30 20% 15%; /* Deep brown-gray */
 
-    --card: 0 0% 96%; /* Lighter Grey */
-    --card-foreground: 240 10% 3.9%;
+    --card: 0 0% 100%; /* Pure white */
+    --card-foreground: 30 20% 15%;
 
-    --popover: 0 0% 96%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 20% 15%;
 
-    --primary: 130 90% 45%; /* Neon Green (hsl(130, 100%, 50%) is #39FF14) */
-    --primary-foreground: 0 0% 98%; /* White for contrast on green */
+    --primary: 76 31% 58%; /* Sage green (#ADC178) - Primary accent */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 180 90% 45%; /* Neon Blue (hsl(180, 100%, 50%) is #00FFFF) */
-    --secondary-foreground: 0 0% 98%; /* White for contrast on blue */
+    --secondary: 75 50% 82%; /* Light sage (#DDE5B6) - Secondary accent */
+    --secondary-foreground: 30 20% 15%;
 
-    --muted: 0 0% 90%; /* Light Grey */
-    --muted-foreground: 240 5% 35%; /* Darker Grey for muted text */
+    --muted: 60 30% 97%; /* Very light warm white */
+    --muted-foreground: 30 10% 40%; /* Muted brown */
+    
+    --accent: 39 70% 60%; /* Warm peach/orange */
+    --accent-foreground: 0 0% 100%;
+    
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+    
+    --border: 75 20% 90%; /* Light sage border */
+    --input: 75 20% 90%;
+    --ring: 76 31% 58%; /* Sage green for focus */
+    
+    /* Chart colors from the palette */
+    --chart-1: 76 31% 58%;  /* Sage green */
+    --chart-2: 75 50% 82%;  /* Light sage */
+    --chart-3: 39 70% 60%;  /* Warm peach */
+    --chart-4: 30 50% 70%;  /* Light brown */
+    --chart-5: 30 20% 40%;  /* Dark brown */
 
-    --accent: 300 76% 35%; /* Purple closer to #800080 (hsl(300, 100%, 25%) is #800080 but can be too dark for text backgrounds) */
-    --accent-foreground: 0 0% 98%;
+    --accent: 350 30% 34%; /* Wine */
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%; /* Red */
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 72% 51%; /* Saturated red */
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 85%; /* Grey border */
-    --input: 0 0% 85%; /* Grey input background */
-    --ring: 130 90% 45%; /* Neon Green for focus rings */
+    --border: 63 15% 85%; /* Light sage border */
+    --input: 63 15% 85%; /* Matching input border */
+    --ring: 8 70% 62%; /* Bittersweet for focus */
 
-    --radius: 0.5rem;
+    --radius: 0.75rem; /* Slightly rounded corners */
 
-    --chart-1: 130 90% 45%;
-    --chart-2: 180 90% 45%;
-    --chart-3: 300 76% 35%;
-    --chart-4: 43 74% 50%; 
-    --chart-5: 27 87% 50%; 
+    /* Chart colors - earth tones */
+    --chart-1: 63 28% 72%;  /* Sage */
+    --chart-2: 39 100% 83%;  /* Peach yellow */
+    --chart-3: 8 70% 62%;    /* Bittersweet */
+    --chart-4: 350 30% 34%;  /* Wine */
+    --chart-5: 353 22% 23%;  /* Van Dyke */
 
-    --sidebar-background: 0 0% 98%; 
-    --sidebar-foreground: 240 10% 3.9%;
-    --sidebar-primary: 130 90% 45%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 180 90% 45%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 0 0% 90%;
-    --sidebar-ring: 130 90% 45%;
+    /* Sidebar - clean and natural */
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 30 20% 15%;
+    --sidebar-primary: 8 70% 62%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 350 30% 34%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 63 15% 85%;
+    --sidebar-ring: 8 70% 62%;
   }
 
   .dark {
-    /* Dark Theme */
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    /* Dark Earthy Theme */
+    --background: 30 15% 10%; /* Deep warm gray */
+    --foreground: 39 40% 95%; /* Off-white */
 
-    --card: 240 6% 10%;
-    --card-foreground: 0 0% 98%;
+    --card: 30 15% 12%; /* Slightly lighter warm gray */
+    --card-foreground: 39 40% 95%;
 
-    --popover: 240 6% 10%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 30 15% 15%;
+    --popover-foreground: 39 40% 95%;
 
-    --primary: 130 100% 50%; /* Neon Green */
-    --primary-foreground: 0 0% 5%; /* Dark for contrast on neon green */
+    --primary: 76 31% 58%; /* Sage green (#ADC178) */
+    --primary-foreground: 30 15% 10%;
 
-    --secondary: 180 100% 50%; /* Neon Blue */
-    --secondary-foreground: 0 0% 5%; /* Dark for contrast on neon blue */
+    --secondary: 39 70% 60%; /* Warm peach */
+    --secondary-foreground: 30 15% 10%;
 
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 30 10% 20%; /* Dark muted brown */
+    --muted-foreground: 39 20% 70%; /* Muted peach */
 
-    --accent: 300 100% 45%; /* Purple - kept brighter for dark theme for visibility, #800080 is hsl(300, 100%, 25%) which is very dark */
-    --accent-foreground: 0 0% 98%;
+    --accent: 75 50% 40%; /* Muted sage */
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive: 0 70% 45%; /* Darker red */
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 240 4% 18%;
-    --input: 240 4% 18%;
-    --ring: 130 100% 50%; /* Neon Green for focus rings */
-    
-    --chart-1: 130 100% 50%;
-    --chart-2: 180 100% 50%;
-    --chart-3: 300 100% 45%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    
-    --sidebar-background: 240 8% 6%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 130 100% 50%;
-    --sidebar-primary-foreground: 0 0% 5%;
-    --sidebar-accent: 180 100% 50%;
-    --sidebar-accent-foreground: 0 0% 5%;
-    --sidebar-border: 240 4% 12%;
-    --sidebar-ring: 130 100% 50%;
+    --border: 30 10% 25%; /* Subtle dark border */
+    --input: 30 10% 25%;
+    --ring: 76 31% 58%; /* Sage green for focus */
+
+    /* Chart colors */
+    --chart-1: 76 31% 58%;  /* Sage green */
+    --chart-2: 75 50% 40%;  /* Muted sage */
+    --chart-3: 39 70% 60%;  /* Warm peach */
+    --chart-4: 30 50% 50%;  /* Warm brown */
+    --chart-5: 30 20% 30%;  /* Dark brown */
+
+    /* Sidebar */
+    --sidebar-background: 30 15% 10%;
+    --sidebar-foreground: 39 40% 95%;
+    --sidebar-primary: 76 31% 58%;
+    --sidebar-primary-foreground: 30 15% 10%;
+    --sidebar-accent: 39 70% 60%;
+    --sidebar-accent-foreground: 30 15% 10%;
+    --sidebar-border: 30 10% 25%;
+    --sidebar-ring: 76 31% 58%;
   }
 }
 
@@ -112,19 +132,62 @@ body {
   }
 }
 
-/* Custom neon text shadow for logo */
-.neon-green-text {
+/* Modern food-inspired glow effects */
+.neon-primary-text {
   color: hsl(var(--primary));
   text-shadow:
-    0 0 5px hsl(var(--primary) / 0.7),
-    0 0 10px hsl(var(--primary) / 0.7),
-    0 0 15px hsl(var(--primary) / 0.7);
+    0 0 6px hsl(var(--primary) / 0.8),
+    0 0 12px hsl(var(--primary) / 0.6),
+    0 0 18px hsl(var(--primary) / 0.3);
+  transition: all 0.3s ease;
+  position: relative;
 }
 
-.neon-blue-text {
-  color: hsl(var(--secondary));
+.neon-primary-text:hover {
   text-shadow:
-    0 0 5px hsl(var(--secondary) / 0.7),
-    0 0 10px hsl(var(--secondary) / 0.7),
-    0 0 15px hsl(var(--secondary) / 0.7);
+    0 0 8px hsl(var(--primary) / 0.9),
+    0 0 16px hsl(var(--primary) / 0.7),
+    0 0 24px hsl(var(--primary) / 0.4);
+  transform: translateY(-1px);
+}
+
+.neon-accent-text {
+  color: hsl(var(--accent));
+  text-shadow:
+    0 0 6px hsl(var(--accent) / 0.7),
+    0 0 12px hsl(var(--accent) / 0.4),
+    0 0 18px hsl(var(--accent) / 0.2);
+  transition: all 0.3s ease;
+}
+
+.neon-accent-text:hover {
+  text-shadow:
+    0 0 8px hsl(var(--accent) / 0.9),
+    0 0 16px hsl(var(--accent) / 0.6),
+    0 0 24px hsl(var(--accent) / 0.3);
+  transform: translateY(-1px);
+}
+
+/* Subtle glow for buttons and interactive elements */
+.glow-on-hover {
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.glow-on-hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: inherit;
+  box-shadow: 0 0 15px hsl(var(--primary) / 0);
+  transition: box-shadow 0.3s ease;
+  pointer-events: none;
+}
+
+.glow-on-hover:hover::before {
+  box-shadow: 0 0 15px hsl(var(--primary) / 0.4);
 }

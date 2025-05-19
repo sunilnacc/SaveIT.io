@@ -75,11 +75,16 @@ const CartPanel: React.FC<CartPanelProps> = ({ cartItems, onUpdateQuantity, onRe
   const movAlerts = getMOVAlerts();
 
   return (
-    <div className="bg-card border border-border rounded-lg shadow-xl flex flex-col h-full">
-      <div className="p-4 border-b border-border">
+    <div className="bg-card border border-border rounded-lg shadow-lg flex flex-col h-full overflow-hidden">
+      <div className="p-4 border-b border-border bg-card/50 backdrop-blur-sm">
         <h3 className="text-xl font-semibold flex items-center">
-          <ShoppingBag className="mr-2 h-6 w-6 text-primary" />
+          <ShoppingBag className="mr-2 h-5 w-5 text-primary" />
           Your Cart
+          {cartItems.length > 0 && (
+            <span className="ml-2 text-sm font-normal text-muted-foreground">
+              ({cartItems.reduce((sum, item) => sum + item.cartQuantity, 0)} items)
+            </span>
+          )}
         </h3>
       </div>
 
@@ -90,8 +95,8 @@ const CartPanel: React.FC<CartPanelProps> = ({ cartItems, onUpdateQuantity, onRe
           <p className="text-sm text-muted-foreground">Add products to start comparing!</p>
         </div>
       ) : (
-        <ScrollArea className="flex-grow max-h-[calc(100vh-420px)] md:max-h-[300px]"> {/* Adjusted height */}
-          <div className="divide-y divide-border">
+        <ScrollArea className="flex-grow max-h-[calc(100vh-420px)] md:max-h-[300px]">
+          <div className="divide-y divide-border/50">
             {cartItems.map((item) => (
               <CartItemCard
                 key={`${item.id}-${item.platform.name}`}
@@ -105,24 +110,27 @@ const CartPanel: React.FC<CartPanelProps> = ({ cartItems, onUpdateQuantity, onRe
       )}
 
       {cartItems.length > 0 && (
-        <div className="p-4 border-t border-border mt-auto">
-          <div className="space-y-1 mb-3 text-sm">
+        <div className="p-4 border-t border-border/50 bg-card/50 backdrop-blur-sm">
+          <div className="space-y-2 mb-4 text-sm">
             <div className="flex justify-between">
-              <span>Items Total:</span>
-              <span>₹{itemsTotal.toFixed(2)}</span>
+              <span className="text-muted-foreground">Items ({cartItems.reduce((sum, item) => sum + item.cartQuantity, 0)})</span>
+              <span className="font-medium">₹{itemsTotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Est. Delivery Fees:</span>
+              <span className="text-muted-foreground">Delivery</span>
               <span className="text-muted-foreground">₹{estimatedDeliveryFees.toFixed(2)}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Est. Platform Fees:</span>
+              <span className="text-muted-foreground">Platform Fees</span>
               <span className="text-muted-foreground">₹{estimatedPlatformFees.toFixed(2)}</span>
             </div>
           </div>
-          <div className="flex justify-between items-center mb-3 border-t pt-3 mt-2">
-            <span className="text-lg font-medium">Estimated Total:</span>
-            <span className="text-2xl font-bold text-primary">₹{grandTotal.toFixed(2)}</span>
+          <div className="flex justify-between items-center mb-4 pt-3 border-t border-border/50">
+            <span className="text-base font-semibold">Estimated Total</span>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-primary">₹{grandTotal.toFixed(2)}</div>
+              <div className="text-xs text-muted-foreground">Incl. all taxes</div>
+            </div>
           </div>
           
           {movAlerts.length > 0 && (
@@ -140,8 +148,7 @@ const CartPanel: React.FC<CartPanelProps> = ({ cartItems, onUpdateQuantity, onRe
             Note: Fees are estimates. Discounts & final charges applied by platforms at checkout.
           </p>
           <Button 
-            className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" 
-            size="lg" 
+            className="w-full h-12 bg-accent hover:bg-accent/90 text-accent-foreground text-base font-medium rounded-lg transition-colors" 
             onClick={onCompareCart} 
             disabled={isComparing || cartItems.length === 0}
           >

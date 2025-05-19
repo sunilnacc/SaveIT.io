@@ -22,44 +22,68 @@ const CartItemCard: React.FC<CartItemCardProps> = ({ item, onUpdateQuantity, onR
   const placeholderImage = `https://placehold.co/100x100.png`;
 
   return (
-    <div className="flex items-center justify-between p-3 border-b border-border hover:bg-muted/30 transition-colors">
-      <div className="flex items-center gap-3">
-        <Image
-          src={item.images?.[0] || placeholderImage}
-          alt={item.name}
-          width={60}
-          height={60}
-          className="rounded-md object-contain border border-border bg-white"
-          data-ai-hint="product thumbnail"
-           onError={(e) => {
+    <div className="flex items-center justify-between p-4 hover:bg-muted/10 transition-colors border-b border-border/50">
+      <div className="flex items-start gap-4 min-w-0 flex-1">
+        <div className="relative flex-shrink-0 w-20 h-20 bg-white rounded-md border border-border overflow-hidden">
+          <Image
+            src={item.images?.[0] || placeholderImage}
+            alt={item.name}
+            fill
+            className="object-contain p-1.5"
+            sizes="80px"
+            onError={(e) => {
               const target = e.target as HTMLImageElement;
               if (target.src !== placeholderImage) {
                 target.src = placeholderImage;
               }
             }}
-        />
-        <div>
-          <h4 className="font-semibold text-sm leading-tight">{item.name}</h4>
-          <p className="text-xs text-muted-foreground">{item.brand} - {item.quantity}</p>
-          <p className="text-xs text-muted-foreground">From: {item.platform.name}</p>
-          <p className="text-sm font-medium text-primary">₹{(Number(displayPrice) * item.cartQuantity).toFixed(2)}</p>
+          />
+        </div>
+        <div className="min-w-0 flex-1">
+          <h4 className="font-medium text-sm leading-tight line-clamp-2 text-foreground">
+            {item.name}
+          </h4>
+          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">
+            {item.brand} • {item.quantity}
+          </p>
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-base font-bold text-primary">
+              ₹{(Number(displayPrice) * item.cartQuantity).toFixed(2)}
+            </p>
+            <p className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
+              {item.platform.name}
+            </p>
+          </div>
         </div>
       </div>
-      <div className="flex items-center gap-1 sm:gap-2">
-        <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(false)} disabled={item.cartQuantity <= 0}>
-          <MinusCircle className="h-5 w-5" />
+      <div className="flex items-center gap-1.5 ml-3">
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="h-9 w-9 text-muted-foreground hover:text-foreground"
+          onClick={() => handleQuantityChange(false)} 
+          disabled={item.cartQuantity <= 1}
+        >
+          <MinusCircle className="h-4 w-4" />
         </Button>
-        <span className="text-sm font-medium w-6 text-center">{item.cartQuantity}</span>
-        <Button variant="ghost" size="icon" onClick={() => handleQuantityChange(true)}>
-          <PlusCircle className="h-5 w-5" />
+        <span className="text-sm font-medium w-6 text-center text-foreground">
+          {item.cartQuantity}
+        </span>
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="h-9 w-9 text-muted-foreground hover:text-foreground"
+          onClick={() => handleQuantityChange(true)}
+        >
+          <PlusCircle className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" onClick={() => onRemoveItem(String(item.id), item.platform.name)} className="text-destructive hover:text-destructive/80">
-          <Trash2 className="h-5 w-5" />
-        </Button>
-         <Button variant="ghost" size="icon" asChild>
-          <a href={item.deeplink} target="_blank" rel="noopener noreferrer" title={`View on ${item.platform.name}`}>
-            <ExternalLink className="h-4 w-4" />
-          </a>
+        <Button 
+          variant="outline" 
+          size="icon" 
+          className="h-9 w-9 text-destructive/80 hover:text-destructive hover:bg-destructive/10"
+          onClick={() => onRemoveItem(String(item.id), item.platform.name)}
+        >
+          <Trash2 className="h-4 w-4" />
         </Button>
       </div>
     </div>

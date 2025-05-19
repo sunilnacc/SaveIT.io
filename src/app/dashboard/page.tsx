@@ -262,50 +262,63 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
-      <main className="flex-grow container mx-auto p-4 md:p-6">
-        <div className="mb-8 mt-4 flex justify-center">
+      <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {/* Search Bar Section */}
+        <div className="max-w-3xl mx-auto mb-8">
           <SearchBar onSearch={handleSearch} isLoading={isLoadingSearch} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-          <ScrollArea className="lg:col-span-2 h-[calc(100vh-220px)] min-h-[400px] pr-2">
-            {isLoadingSearch && (
-              <div className="flex flex-col justify-center items-center py-10 min-h-[300px]">
-                <Loader2 className="h-16 w-16 animate-spin text-primary" />
-                <p className="ml-4 mt-4 text-xl text-muted-foreground">Searching for products...</p>
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Products List - Left Column */}
+          <div className="lg:col-span-8 xl:col-span-9">
+            <ScrollArea className="h-[calc(100vh-220px)] lg:h-[calc(100vh-180px)] pr-2 -mr-4">
+              <div className="pr-4">
+                {isLoadingSearch ? (
+                  <div className="flex flex-col justify-center items-center py-16 min-h-[400px] bg-card rounded-xl border border-border">
+                    <Loader2 className="h-16 w-16 animate-spin text-primary" />
+                    <p className="mt-6 text-xl font-medium text-muted-foreground">Searching for products...</p>
+                  </div>
+                ) : products.length > 0 ? (
+                  <div className="space-y-4">
+                    <h2 className="text-2xl font-bold text-foreground">Search Results</h2>
+                    <ProductList products={products} onAddToCart={handleAddToCart} />
+                  </div>
+                ) : searchQuery ? (
+                  <div className="text-center py-16 px-4 bg-card rounded-xl border-2 border-dashed border-border">
+                    <SearchX className="h-16 w-16 mx-auto text-primary mb-4" />
+                    <h2 className="text-2xl font-bold text-foreground mb-2">No Products Found</h2>
+                    <p className="text-muted-foreground">We couldn't find any products matching "{searchQuery}"</p>
+                    <p className="text-muted-foreground">Try a different search term or check your spelling</p>
+                  </div>
+                ) : (
+                  <div className="text-center py-16 px-4 bg-card rounded-xl border-2 border-dashed border-border">
+                    <ShoppingBasket className="h-16 w-16 mx-auto text-primary mb-4" />
+                    <h2 className="text-2xl font-bold text-foreground mb-2">Welcome to SaveIT.io!</h2>
+                    <p className="text-muted-foreground">Your smart grocery comparison companion</p>
+                    <p className="text-muted-foreground">Search for products to find the best prices and start saving</p>
+                  </div>
+                )}
               </div>
-            )}
-            {!isLoadingSearch && products.length > 0 && (
-              <ProductList products={products} onAddToCart={handleAddToCart} />
-            )}
-            {!isLoadingSearch && products.length === 0 && searchQuery && (
-               <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center min-h-[300px] border-2 border-dashed border-border rounded-lg bg-card/30">
-                <SearchX className="h-20 w-20 text-primary mb-6" />
-                <h2 className="text-3xl font-semibold mb-3 text-foreground">No Products Found</h2>
-                <p className="text-lg">We couldn't find any products matching "{searchQuery}".</p>
-                <p className="text-lg">Try a different search term or check spelling.</p>
-              </div>
-            )}
-             {!isLoadingSearch && products.length === 0 && !searchQuery && (
-              <div className="text-center text-muted-foreground py-10 flex flex-col items-center justify-center min-h-[300px] border-2 border-dashed border-border rounded-lg bg-card/30">
-                <ShoppingBasket className="h-20 w-20 text-primary mb-6" />
-                <h2 className="text-3xl font-semibold mb-3 text-foreground">Welcome to SaveIT.io!</h2>
-                <p className="text-lg mb-1">Your smart grocery comparison companion.</p>
-                <p className="text-lg">Search for products above to find the best prices and start saving.</p>
-              </div>
-            )}
-          </ScrollArea>
+            </ScrollArea>
+          </div>
 
-          <div className="lg:col-span-1 lg:sticky lg:top-[calc(var(--header-height,60px)+1.5rem)] self-start">
-            <CartPanel 
-              cartItems={cartItems} 
-              onUpdateQuantity={handleUpdateQuantity} 
-              onRemoveItem={handleRemoveItem}
-              onCompareCart={handleCompareCart}
-              isComparing={isComparing}
-              platformCostConfig={PLATFORM_COST_CONFIG} // Pass config to cart panel
-            />
-            <SavingsSuggestionsPanel suggestions={savingsSuggestions} isLoading={isLoadingSuggestions} />
+          {/* Cart & Savings - Right Column */}
+          <div className="lg:col-span-4 xl:col-span-3 space-y-6">
+            <div className="sticky top-6 space-y-6">
+              <CartPanel 
+                cartItems={cartItems} 
+                onUpdateQuantity={handleUpdateQuantity} 
+                onRemoveItem={handleRemoveItem}
+                onCompareCart={handleCompareCart}
+                isComparing={isComparing}
+                platformCostConfig={PLATFORM_COST_CONFIG}
+              />
+              <SavingsSuggestionsPanel 
+                suggestions={savingsSuggestions} 
+                isLoading={isLoadingSuggestions} 
+              />
+            </div>
           </div>
         </div>
       </main>
