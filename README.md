@@ -1,6 +1,15 @@
 
 # SaveIT.io
 
+[🔍 Search Assistant](/search) | [🛒 Compare Prices](/compare) | [💰 Start Comparing Now](/compare)
+
+## Quick Links
+
+- [🔍 Search for Products](/search)
+- [🛒 Compare Prices Across Platforms](/compare)
+- [📊 View Price History](/compare)
+- [🛍️ Make Smart Shopping Decisions](/compare)
+
 ## Description
 
 In India’s fast-growing quick commerce space, platforms like Swiggy Instamart, Zepto, and Blinkit offer lightning-fast delivery of groceries and daily essentials. However, for users, this often becomes a confusing experience. The same item is priced differently across platforms, delivery and platform fees vary, and there’s no single view to help make a smart buying decision.
@@ -54,3 +63,7 @@ SaveIT.io empowers users to buy smarter, not more—making quick commerce truly 
 - **Better Decision-Making for Users:** Empowers users with smart, autonomous suggestions, saving time and money.
 
 SaveIT.io aims to enhance the quick commerce ecosystem for both users and platforms.
+
+## Try It Yourself
+
+Ready to start saving money on your everyday essentials? [Click here to go to our comparison tool](/compare) and see how much you could save today!

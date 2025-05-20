@@ -9,27 +9,17 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function SplashScreen() {
   const router = useRouter();
-  const { user, loading } = useAuth();
+  const { loading } = useAuth();
 
   useEffect(() => {
     if (!loading) {
       const timer = setTimeout(() => {
-        if (user) {
-          router.push('/dashboard');
-        } else {
-          // If not logged in, user might want to see splash then go to login/signup.
-          // Or, automatically redirect to login. For now, let's keep the splash then they can navigate.
-          // If explicit redirect to login is desired: router.push('/login');
-          // For now, let's assume header provides login/signup if not logged in.
-          // If dashboard is the only "next step", redirecting unauth users to login from here might be good.
-          // Let's redirect to login if not authenticated after splash.
-          router.push('/login');
-        }
-      }, 2000); // 2 seconds delay
+      router.push('/search');
+      }, 350); // simple loading
 
       return () => clearTimeout(timer); // Cleanup the timer
     }
-  }, [router, user, loading]);
+  }, [router, loading]);
 
   // Show loading spinner while auth state is being determined
   if (loading) {
