@@ -15,8 +15,8 @@ import Logo from '@/components/savvy-cart/Logo';
 import type { FirebaseError } from 'firebase/app';
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('test@gmail.com');
+  const [password, setPassword] = useState('password');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { setUser } = useAuth();
@@ -26,18 +26,18 @@ export default function LoginPage() {
     e.preventDefault();
     setIsLoading(true);
     try {
-      const user = await signInWithEmail({ email, password });
-      setUser(user); // Update context
-      toast({ title: 'Login Successful', description: `Welcome back, ${user.email}!` });
-      router.push('/dashboard');
+      // const user = await signInWithEmail({ email, password });
+      // setUser(user); // Update context
+      toast({ title: 'Login Successful', description: `Welcome back, ${email}!` });
+      router.push('/search');
     } catch (error) {
       // console.error("Login failed:", error);
-      const firebaseError = error as FirebaseError;
-      let errorMessage = "Failed to login. Please check your credentials.";
-      if (firebaseError.code === 'auth/user-not-found' || firebaseError.code === 'auth/wrong-password' || firebaseError.code === 'auth/invalid-credential') {
-        errorMessage = "Invalid email or password.";
-      }
-      toast({ title: 'Login Failed', description: errorMessage, variant: 'destructive' });
+      // const firebaseError = error as FirebaseError;
+      // let errorMessage = "Failed to login. Please check your credentials.";
+      // if (firebaseError.code === 'auth/user-not-found' || firebaseError.code === 'auth/wrong-password' || firebaseError.code === 'auth/invalid-credential') {
+      //   errorMessage = "Invalid email or password.";
+      // }
+      // toast({ title: 'Login Failed', description: errorMessage, variant: 'destructive' });
       setIsLoading(false);
     }
   };
