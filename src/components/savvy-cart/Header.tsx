@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User as UserIcon, LogOut, LogIn, UserPlus } from 'lucide-react';
+import { User as UserIcon, LogOut, LogIn, UserPlus, ChartLine } from 'lucide-react';
 
 const Header: React.FC = () => {
   const { user, setUser } = useAuth();
@@ -85,6 +85,11 @@ const Header: React.FC = () => {
               <Button variant="ghost" asChild>
                 <Link href="/login">
                   <LogIn className="mr-2 h-4 w-4" /> Login
+                </Link>
+              </Button>
+              <Button variant="primary" asChild>
+                <Link href="/charts">
+                  <ChartLine className="mr-2 h-4 w-4" /> View Insights
                 </Link>
               </Button>
               <Button variant="primary" asChild>

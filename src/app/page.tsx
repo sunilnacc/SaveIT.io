@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect,useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Logo from '@/components/savvy-cart/Logo';
 import { Loader2 } from 'lucide-react';
@@ -9,13 +9,14 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function SplashScreen() {
   const router = useRouter();
-  const { loading } = useAuth();
+  const [loading,setLoading]=useState(false);
 
   useEffect(() => {
     if (!loading) {
       const timer = setTimeout(() => {
-      router.push('/search');
-      }, 350); // simple loading
+        setLoading(true);
+        router.push('/login');
+      }, 1000); // simple loading
 
       return () => clearTimeout(timer); // Cleanup the timer
     }
