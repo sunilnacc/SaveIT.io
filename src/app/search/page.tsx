@@ -5,6 +5,7 @@ import { Send, Bot, User as UserIcon, Sparkles, Search, ChefHat, BarChart2 } fro
 import { PlaceholdersAndVanishInput } from '@/components/ui/placeholders-and-vanish-input';
 import { RecipeAssistant } from '@/components/ai/RecipeAssistant';
 import Link from 'next/link';
+import Header from '@/components/savvy-cart/Header';
 
 type Message = {
   id: string;
@@ -111,58 +112,35 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-white dark:bg-gray-900">
-      {/* Simple Header */}
-      <header className="border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 py-3 px-4">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Bot className="h-6 w-6 text-orange-500" />
-              <h1 className="text-lg font-semibold">SaveIT.ai</h1>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Link href="/compare" className="flex items-center space-x-1 px-3 py-1.5 rounded-lg bg-orange-100 hover:bg-orange-200 dark:bg-orange-900/30 dark:hover:bg-orange-800/50 text-orange-600 dark:text-orange-400 transition-colors">
-                <BarChart2 className="h-4 w-4" />
-                <span className="text-sm font-medium">Compare</span>
-              </Link>
-            </div>
-            <button className="text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              Sign in
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Main Chat Area */}
-      <div 
-        ref={chatContainerRef}
-        className={`flex-1 flex flex-col overflow-hidden w-full max-w-3xl mx-auto px-4 ${showRecipeAssistant ? 'overflow-y-auto' : ''}`}
-      >
-        {/* Welcome Message */}
-        {showWelcome && messages.length === 0 && !showRecipeAssistant && (
-          <div className="flex-1 flex flex-col items-center justify-center py-8 px-4">
-            <div className="w-full max-w-2xl mx-auto text-center">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-orange-100 dark:bg-orange-900/30 mb-6">
-                <Search className="w-8 h-8 text-orange-500" />
+    <div className="flex flex-col h-screen bg-background">
+      {/* Use the same Header component as the compare page */}
+      <Header />
+      <div className="flex-1 overflow-hidden flex flex-col max-w-4xl mx-auto w-full px-4 py-6">
+        {/* Welcome Screen */}
+        {showWelcome && (
+          <div className="flex-1 flex flex-col justify-center items-center py-8">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <Sparkles className="h-8 w-8 text-primary" />
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                What would you like to compare today?
-              </h1>
-              <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-lg mx-auto">
-                I can help you find the best prices across multiple platforms. Just tell me what you're looking for!
+              <h1 className="text-2xl font-bold text-foreground mb-2">Welcome to SaveIT.ai</h1>
+              <p className="text-muted-foreground max-w-md mx-auto">
+                Your AI shopping assistant that helps you find the best deals across multiple platforms.
               </p>
-              
-              <div className="grid grid-cols-1 gap-3 max-w-xl mx-auto">
-                {prompts.map((prompt, index) => (
+            </div>
+            <div className="w-full max-w-md">
+              <div className="bg-card rounded-lg border border-border p-4 mb-4">
+                <h2 className="text-lg font-medium text-foreground mb-3">Try asking about:</h2>
+                {prompts.map((prompt) => (
                   <button
-                    key={index}
+                    key={prompt}
                     onClick={() => handleSuggestionClick(prompt)}
-                    className="flex items-center space-x-3 p-3 text-left rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                    className="flex items-center space-x-3 p-3 text-left rounded-lg border border-border hover:bg-accent transition-colors group w-full mb-2"
                   >
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 group-hover:text-orange-500">
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground group-hover:text-primary">
                       <Search className="w-4 h-4" />
                     </div>
-                    <span className="text-gray-700 dark:text-gray-300">{prompt}</span>
+                    <span className="text-foreground">{prompt}</span>
                   </button>
                 ))}
               </div>
@@ -180,8 +158,8 @@ export default function SearchPage() {
               <div className={`flex w-full max-w-3xl ${message.isUser ? 'justify-end' : 'justify-start'}`}>
                 {!message.isUser && (
                   <div className="flex-shrink-0 mr-3">
-                    <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center">
-                      <Bot size={16} className="text-white" />
+                    <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+                      <Bot size={16} className="text-primary-foreground" />
                     </div>
                   </div>
                 )}
@@ -189,8 +167,8 @@ export default function SearchPage() {
                   <div 
                     className={`inline-block px-4 py-2.5 rounded-2xl ${
                       message.isUser 
-                        ? 'bg-blue-500 text-white' 
-                        : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
+                        ? 'bg-primary text-primary-foreground' 
+                        : 'bg-muted text-foreground'
                     }`}
                   >
                     <p className="leading-relaxed">{message.content}</p>
@@ -205,15 +183,15 @@ export default function SearchPage() {
         {/* Recipe Assistant */}
         {showRecipeAssistant && (
           <div className="flex-1 overflow-y-auto py-4">
-            <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 mb-4">
+            <div className="bg-card rounded-lg border border-border p-4 mb-4">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-2">
-                  <ChefHat className="h-5 w-5 text-orange-500" />
-                  <h3 className="font-medium">Recipe Assistant</h3>
+                  <ChefHat className="h-5 w-5 text-primary" />
+                  <h3 className="font-medium text-foreground">Recipe Assistant</h3>
                 </div>
                 <button 
                   onClick={handleBackToChat}
-                  className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                  className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Back to chat
                 </button>
@@ -224,7 +202,7 @@ export default function SearchPage() {
         )}
 
         {/* Input Area */}
-        <div className="py-4 border-t border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
+        <div className="py-4 border-t border-border bg-background/80 backdrop-blur-sm">
           <div className="max-w-2xl mx-auto px-4">
             <div className="relative">
               <PlaceholdersAndVanishInput
@@ -234,13 +212,13 @@ export default function SearchPage() {
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <div className={`p-1 rounded-full ${
-                  input.trim() ? 'bg-orange-500 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-400'
+                  input.trim() ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
                 }`}>
                   <Send size={16} />
                 </div>
               </div>
             </div>
-            <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-3">
+            <p className="text-xs text-center text-muted-foreground mt-3">
               SaveIT.ai can make mistakes. Consider checking important information.
             </p>
           </div>

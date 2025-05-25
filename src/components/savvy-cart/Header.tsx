@@ -7,7 +7,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { signOutUser } from '@/lib/firebase/auth';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import {
@@ -19,12 +19,16 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User as UserIcon, LogOut, LogIn, UserPlus, ChartLine } from 'lucide-react';
+import { User as UserIcon, LogOut, UserPlus, ChartLine, Component, Search } from 'lucide-react';
 
 const Header: React.FC = () => {
   const { user, setUser } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const { toast } = useToast();
+  
+  const isComparePage = pathname === '/compare';
+  const isSearchPage = pathname === '/search';
 
   const handleLogout = async () => {
     try {
@@ -82,19 +86,23 @@ const Header: React.FC = () => {
             </DropdownMenu>
           ) : (
             <>
-              <Button variant="ghost" asChild>
-                <Link href="/login">
-                  <LogIn className="mr-2 h-4 w-4" /> Login
-                </Link>
-              </Button>
-              <Button variant="primary" asChild>
+              {!isSearchPage && (
+                <Button variant="ghost" asChild>
+                  <Link href="/search">
+                    <Search className="mr-2 h-4 w-4" /> Chat Agent
+                  </Link>
+                </Button>
+              )}
+              {!isComparePage && (
+                <Button variant="ghost" asChild>
+                  <Link href="/compare">
+                    <Component className="mr-2 h-4 w-4" /> Compare Cart
+                  </Link>
+                </Button>
+              )}
+              <Button variant="secondary" asChild>
                 <Link href="/charts">
                   <ChartLine className="mr-2 h-4 w-4" /> View Insights
-                </Link>
-              </Button>
-              <Button variant="primary" asChild>
-                <Link href="/signup">
-                  <UserPlus className="mr-2 h-4 w-4" /> Sign Up
                 </Link>
               </Button>
             </>
