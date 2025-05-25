@@ -217,12 +217,19 @@ export default function DashboardPage() {
           });
           
           // Ensure product has platform cost details before adding as alternative
-           const platformDetails = getPlatformCosts(product.platform.name);
-           const enrichedProduct = { ...product, platform: { ...product.platform, ...platformDetails } };
-
+          const platformDetails = getPlatformCosts(product.platform.name);
+          // Create enriched product with preserved platform name
+          const enrichedProduct = { 
+            ...product, 
+            platform: { 
+              ...product.platform, 
+              ...platformDetails,
+              name: product.platform.name // Explicitly preserve the original platform name
+            } 
+          };
 
           if (equivalency.equivalent || product.name.toLowerCase().includes(cartItem.name.toLowerCase().substring(0,5))) { // Fallback name similarity
-             alternatives.push({
+            alternatives.push({
               ...enrichedProduct, 
               isEquivalent: equivalency.equivalent,
               equivalencyReason: equivalency.reason,
@@ -235,21 +242,31 @@ export default function DashboardPage() {
             description: `Could not check equivalency for ${product.name}. Comparing by name.`,
             variant: "destructive",
           });
-           if (product.name.toLowerCase().includes(cartItem.name.toLowerCase().substring(0,5))) { // Fallback name similarity
+          
+          if (product.name.toLowerCase().includes(cartItem.name.toLowerCase().substring(0,5))) { // Fallback name similarity
             const platformDetails = getPlatformCosts(product.platform.name);
-            const enrichedProduct = { ...product, platform: { ...product.platform, ...platformDetails } };
+            // Create enriched product with preserved platform name
+            const enrichedProduct = { 
+              ...product, 
+              platform: { 
+                ...product.platform, 
+                ...platformDetails,
+                name: product.platform.name // Explicitly preserve the original platform name
+              } 
+            };
+            
             alternatives.push({
-             ...enrichedProduct,
-             isEquivalent: false, 
-             equivalencyReason: "AI check failed; similar name.",
-             platformDetails: enrichedProduct.platform,
-           });
-         }
+              ...enrichedProduct,
+              isEquivalent: false, 
+              equivalencyReason: "AI check failed; similar name.",
+              platformDetails: enrichedProduct.platform,
+            });
+          }
         }
       }
       
       // Sort alternatives by offer price first (further sorting by total cost can happen in ComparisonView)
-      alternatives.sort((a, b) => parseFloat(String(a.offer_price || a.mrp)) - parseFloat(String(b.offer_price || b.mrp)));
+      alternatives.sort((a: Product, b: Product) => parseFloat(String(a.offer_price || a.mrp)) - parseFloat(String(b.offer_price || b.mrp)));
 
       newComparisonResults.push({ originalItem: cartItem, alternatives });
     }

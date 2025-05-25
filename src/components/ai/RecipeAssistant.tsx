@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Loader2, ShoppingCart, Check, X, ChefHat, AlertCircle, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getRecipeIngredients, searchForIngredientPrices } from '@/app/actions/recipe';
+import Image from 'next/image';
 
 type Platform = 'Swiggy Instamart' | 'Zepto' | 'Blinkit' | 'Dunzo' | 'BigBasket' | 'BBNow' | 'DMart' | 'JioMart';
 
@@ -59,6 +60,7 @@ export function RecipeAssistant() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [cart, setCart] = useState<Cart>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isApiLoading, setIsApiLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [platforms, setPlatforms] = useState<Platform[]>(['Swiggy Instamart', 'Zepto', 'Blinkit']);
   const [step, setStep] = useState<'input' | 'ingredients' | 'cart'>('input');
@@ -141,6 +143,7 @@ export function RecipeAssistant() {
     
     // Reset states
     setIsLoading(true);
+    setIsApiLoading(false);
     setError(null);
     setUnavailableIngredients([]);
     setAiThoughts([]);
@@ -269,7 +272,10 @@ export function RecipeAssistant() {
       
       // IMPORTANT: Use our new needToSearch list instead of ingredientsToSearch
       // Call the server action to search for ingredient prices with the filtered list
+      setIsApiLoading(true);
+      setCurrentAction('Fetching ingredient prices from servers...');
       const result = await searchForIngredientPrices(needToSearch, platforms);
+      setIsApiLoading(false);
       
       addAiThought('Finalizing shopping list with best available options');
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -315,6 +321,8 @@ export function RecipeAssistant() {
         }
       }
       
+      // Clear loading states before showing the cart
+      setCurrentAction('');
       setCart(newCart);
       setStep('cart');
     } catch (err) {
@@ -322,6 +330,8 @@ export function RecipeAssistant() {
       console.error('Error finding deals:', err);
     } finally {
       setIsLoading(false);
+      setIsApiLoading(false);
+      setCurrentAction('');
     }
   };
 
@@ -359,8 +369,9 @@ export function RecipeAssistant() {
         {/* Current action with loading indicator */}
         {currentAction && (
           <div className="flex items-center mb-4 text-sm bg-blue-50 dark:bg-blue-900/20 p-3 rounded-md">
-            <Loader2 className="h-4 w-4 animate-spin text-blue-500 mr-2" />
+            <Loader2 className={`h-4 w-4 ${isApiLoading ? 'animate-spin text-red-500' : 'animate-spin text-blue-500'} mr-2`} />
             <p className="font-medium">{currentAction}</p>
+            {isApiLoading && <span className="ml-2 text-xs font-medium text-red-500 animate-pulse">API call in progress...</span>}
           </div>
         )}
         
@@ -429,7 +440,7 @@ export function RecipeAssistant() {
                           <span className="inline-block w-3 h-3 bg-amber-500 rounded-full mr-1 mt-0.5"></span>
                           <span>
                             API call: <code className="bg-gray-200 dark:bg-gray-700 px-1 py-0.5 rounded text-xs break-all">
-                              https://qp94doiea4.execute-api.ap-south-1.amazonaws.com/default/qc?lat=12.9038&lon=77.6648&type=groupsearch&query={encodeURIComponent(query.simplified)}
+                              /query={encodeURIComponent(query.simplified)}
                             </code>
                           </span>
                         </div>
@@ -506,7 +517,7 @@ export function RecipeAssistant() {
     return (
       <div className="flex flex-col items-center justify-center py-6">
         <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-        <p className="text-lg font-medium">Finding the best deals...</p>
+        <p className="text-lg font-medium">Finding required ingredients for the recipe...</p>
         <p className="text-sm text-gray-500 mt-2">This may take a moment</p>
         
         {/* AI Thinking Process */}
@@ -749,15 +760,26 @@ export function RecipeAssistant() {
                     {platformCart.length > 0 ? (
                       platformCart.map((item, i) => (
                         <div key={i} className="flex items-start space-x-3">
-                          <div className="flex-shrink-0 w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded flex items-center justify-center overflow-hidden">
-                            {item.image ? (
-                              <img 
+                          <div className="flex-shrink-0 w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded overflow-hidden relative">
+                            {item.image && item.image !== 'N/A' && item.image.startsWith('http') ? (
+                              <Image 
                                 src={item.image} 
                                 alt={item.name} 
-                                className="w-full h-full object-contain"
+                                fill
+                                className="object-contain p-1.5"
+                                sizes="64px"
+                                onError={(e) => {
+                                  const target = e.target as HTMLImageElement;
+                                  const placeholderImage = `https://placehold.co/100x100.png`;
+                                  if (target.src !== placeholderImage) {
+                                    target.src = placeholderImage;
+                                  }
+                                }}
                               />
                             ) : (
-                              <ShoppingCart className="h-4 w-4 text-gray-400" />
+                              <div className="w-full h-full flex items-center justify-center">
+                                <ShoppingCart className="h-4 w-4 text-gray-400" />
+                              </div>
                             )}
                           </div>
                           <div className="flex-1 min-w-0">
