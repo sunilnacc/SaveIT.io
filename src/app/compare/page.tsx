@@ -274,16 +274,54 @@ export default function DashboardPage() {
     setComparisonResults(newComparisonResults);
     setIsComparing(false);
   };
+const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const file = event.target.files?.[0]; // Get the first selected file
 
+  if (file) {
+    console.log("Selected file:", file.name, file.type);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        console.log("Image data URL:", e.target.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+};
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
       <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {/* Search Bar Section */}
-        <div className="max-w-3xl mx-auto mb-8">
+        
+        <div className="max-w-3xl mx-auto mb-8 flex items-center space-x-4">
+          <input
+      type="file"
+      id="image-upload"
+      accept="image/*" // Restrict to image files
+      style={{ display: 'none' }} // Hide the default input
+      onChange={handleImageUpload} // Function to handle file selection
+    />
+    {/* Attachment icon, acts as a label for the hidden input */}
+    <label htmlFor="image-upload" className="cursor-pointer p-2 rounded-full bg-gray-200 hover:bg-gray-300">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        className="h-6 w-6 text-gray-600"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13.5"
+        />
+      </svg>
+    </label>
           <SearchBar onSearch={handleSearch} isLoading={isLoadingSearch} />
-        </div>
+        
+  </div>
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

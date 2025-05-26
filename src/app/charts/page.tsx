@@ -27,14 +27,14 @@ import {
 import { Line, Bar, Doughnut, Pie } from "react-chartjs-2";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  ArrowDown, 
-  ChevronRight, 
-  TrendingUp, 
-  Info, 
-  ShoppingCart, 
-  Clock, 
-  Tag, 
+import {
+  ArrowDown,
+  ChevronRight,
+  TrendingUp,
+  Info,
+  ShoppingCart,
+  Clock,
+  Tag,
   AlertTriangle,
   Percent,
   DollarSign
@@ -85,21 +85,32 @@ interface FrequentItem {
   priceHistory?: {platform: string; price: number}[];
 }
 
+// Helper function to get a CSS variable value
+const getCssVariableValue = (variableName: string): string => {
+  if (typeof document !== 'undefined') { // Check if running in a browser environment
+    // Use the HSL string directly as defined in CSS. Chart.js can parse this.
+    return getComputedStyle(document.documentElement).getPropertyValue(variableName).trim();
+  }
+  return ''; // Fallback for server-side rendering or non-browser environments
+};
+
 // Theme colors - matching the app's color scheme from globals.css
+// These now correctly fetch HSL values from your CSS variables.
 const colors = {
-  blinkit: "hsl(var(--chart-1))", // Sage green
-  zepto: "hsl(var(--chart-2))", // Light sage/Peach yellow
-  swiggy: "hsl(var(--chart-3))", // Bittersweet
-  bigbasket: "hsl(var(--chart-4))", // Wine
-  dmart: "hsl(var(--chart-5))", // Van Dyke
-  savings: "hsl(var(--primary))", // Primary color
-  warning: "hsl(var(--destructive))", // Destructive color
-  background: "hsl(var(--background))",
-  cardBg: "hsl(var(--card))",
-  textPrimary: "hsl(var(--foreground))",
-  textSecondary: "hsl(var(--muted-foreground))",
-  saveitNeonGreen: "hsl(var(--primary))" // For consistency with existing code
+  blinkit: `hsl(${getCssVariableValue('--chart-1')})`, // Sage green
+  zepto: `hsl(${getCssVariableValue('--chart-2')})`, // Light sage/Peach yellow
+  swiggy: `hsl(${getCssVariableValue('--chart-3')})`, // Bittersweet
+  bigbasket: `hsl(${getCssVariableValue('--chart-4')})`, // Wine
+  dmart: `hsl(${getCssVariableValue('--chart-5')})`, // Van Dyke
+  savings: `hsl(${getCssVariableValue('--primary')})`, // Primary color
+  warning: `hsl(${getCssVariableValue('--destructive')})`, // Destructive color
+  background: `hsl(${getCssVariableValue('--background')})`,
+  cardBg: `hsl(${getCssVariableValue('--card')})`,
+  textPrimary: `hsl(${getCssVariableValue('--foreground')})`,
+  textSecondary: `hsl(${getCssVariableValue('--muted-foreground')})`,
+  saveitNeonGreen: `hsl(${getCssVariableValue('--primary')})` // For consistency with existing code
 } as const;
+
 
 ChartJS.register(
   LineElement,
@@ -109,7 +120,7 @@ ChartJS.register(
   LinearScale,
   Tooltip,
   Legend,
-  ArcElement 
+  ArcElement
 );
 // Mock data with types - more realistic price data for grocery items
 const priceHistoryData: PriceHistoryData[] = [
@@ -151,10 +162,10 @@ const platformData: PlatformData[] = [
 ];
 
 const frequentItems: FrequentItem[] = [
-  { 
-    name: "Amul Taaza Milk (1L)", 
-    count: 12, 
-    avgPrice: 68, 
+  {
+    name: "Amul Taaza Milk (1L)",
+    count: 12,
+    avgPrice: 68,
     bestPlatform: "Blinkit",
     bestPrice: 65,
     savings: 3,
@@ -168,10 +179,10 @@ const frequentItems: FrequentItem[] = [
       {platform: "DMart", price: 67}
     ]
   },
-  { 
-    name: "Britannia Whole Wheat Bread", 
-    count: 8, 
-    avgPrice: 45, 
+  {
+    name: "Britannia Whole Wheat Bread",
+    count: 8,
+    avgPrice: 45,
     bestPlatform: "Zepto",
     bestPrice: 42,
     savings: 3,
@@ -185,10 +196,10 @@ const frequentItems: FrequentItem[] = [
       {platform: "DMart", price: 44}
     ]
   },
-  { 
-    name: "Fresho Farm Eggs (6pcs)", 
-    count: 6, 
-    avgPrice: 82, 
+  {
+    name: "Fresho Farm Eggs (6pcs)",
+    count: 6,
+    avgPrice: 82,
     bestPlatform: "Blinkit",
     bestPrice: 75,
     savings: 7,
@@ -202,10 +213,10 @@ const frequentItems: FrequentItem[] = [
       {platform: "DMart", price: 78}
     ]
   },
-  { 
-    name: "Nescafe Classic Coffee (250g)", 
-    count: 4, 
-    avgPrice: 375, 
+  {
+    name: "Nescafe Classic Coffee (250g)",
+    count: 4,
+    avgPrice: 375,
     bestPlatform: "Swiggy",
     bestPrice: 359,
     savings: 16,
@@ -256,7 +267,7 @@ const lineChartData: ChartData<'line'> = {
       label: "Blinkit",
       data: priceHistoryData.map(d => d.blinkit),
       borderColor: colors.blinkit,
-      backgroundColor: `${colors.blinkit}40`,
+      backgroundColor: `${colors.blinkit.slice(0, -1)}, 0.2)`, // Adjust opacity for fill
       tension: 0.4,
       fill: true
     },
@@ -264,7 +275,7 @@ const lineChartData: ChartData<'line'> = {
       label: "Zepto",
       data: priceHistoryData.map(d => d.zepto),
       borderColor: colors.zepto,
-      backgroundColor: `${colors.zepto}40`,
+      backgroundColor: `${colors.zepto.slice(0, -1)}, 0.2)`,
       tension: 0.4,
       fill: true
     },
@@ -272,7 +283,7 @@ const lineChartData: ChartData<'line'> = {
       label: "Swiggy",
       data: priceHistoryData.map(d => d.swiggy),
       borderColor: colors.swiggy,
-      backgroundColor: `${colors.swiggy}40`,
+      backgroundColor: `${colors.swiggy.slice(0, -1)}, 0.2)`,
       tension: 0.4,
       fill: true
     }
@@ -281,18 +292,24 @@ const lineChartData: ChartData<'line'> = {
 
 // Create product comparison data for a single product
 const createProductComparisonData = (item: FrequentItem): ChartData<'bar'> => {
+  // Ensure the background colors match the correct platform
+  const backgroundColors = item.priceHistory?.map(p => {
+    switch (p.platform) {
+      case "Blinkit": return colors.blinkit;
+      case "Zepto": return colors.zepto;
+      case "Swiggy": return colors.swiggy;
+      case "BigBasket": return colors.bigbasket;
+      case "DMart": return colors.dmart;
+      default: return colors.textSecondary; // Fallback
+    }
+  }) || [];
+
   return {
     labels: item.priceHistory?.map(p => p.platform) || [],
     datasets: [{
       label: `Price (₹) for ${item.name}`,
       data: item.priceHistory?.map(p => p.price) || [],
-      backgroundColor: [
-        colors.blinkit,
-        colors.zepto,
-        colors.swiggy,
-        colors.bigbasket,
-        colors.dmart
-      ],
+      backgroundColor: backgroundColors,
       borderRadius: 4
     }]
   };
@@ -339,13 +356,13 @@ const platformFeesData: ChartData<'bar'> = {
     {
       label: "Delivery Fee (₹)",
       data: platformData.map(p => p.deliveryFee),
-      backgroundColor: `${colors.blinkit}80`,
+      backgroundColor: `${colors.blinkit.slice(0, -1)}`,
       borderRadius: 4
     },
     {
       label: "Platform Fee (₹)",
-      data: [5, 7, 10, 0, 0],
-      backgroundColor: `${colors.swiggy}80`,
+      data: [5, 7, 10, 0, 0], // Dummy platform fees
+      backgroundColor: `${colors.swiggy.slice(0, -1)}`, 
       borderRadius: 4
     }
   ]
@@ -359,8 +376,6 @@ const spendingByPlatformData: ChartData<'pie'> = {
     borderWidth: 0
   }]
 };
-
-// Base chart options with type safety - common for all chart types
 const getBaseChartOptions = <T extends ChartType = ChartType>() => {
   // Using a more general return type to avoid strict type checking issues
   return {
@@ -400,11 +415,11 @@ const getBaseChartOptions = <T extends ChartType = ChartType>() => {
 // Cartesian chart options (for line and bar charts)
 const getCartesianChartOptions = <T extends 'line' | 'bar'>() => {
   const baseOptions = getBaseChartOptions<T>();
-  
+
   const xScaleOptions: CartesianScaleOptions = {
     ...Chart.defaults.scales.linear,
-    min: 0,
-    max: 0,
+    min: undefined, // Let Chart.js determine min/max
+    max: undefined, // Let Chart.js determine min/max
     axis: 'x',
     bounds: 'ticks',
     position: 'bottom',
@@ -419,7 +434,7 @@ const getCartesianChartOptions = <T extends 'line' | 'bar'>() => {
     },
     border: {
       display: false,
-      color: colors.textSecondary + '30',
+      color: `${colors.textSecondary.slice(0, -1)}, 0.3)`, // Lighter border color for consistency
       width: 1,
       dash: [],
       dashOffset: 0,
@@ -428,81 +443,12 @@ const getCartesianChartOptions = <T extends 'line' | 'bar'>() => {
     grid: {
       display: true,
       drawOnChartArea: true,
-      color: colors.textSecondary + '30', // Lighter grid lines
+      color: `${colors.textSecondary.slice(0, -1)}, 0.3)`, // Lighter grid lines
       lineWidth: 1,
       drawTicks: true,
       tickBorderDash: [],
       tickBorderDashOffset: 0,
-      tickColor: colors.textSecondary + '30',
-      tickLength: 8,
-      tickWidth: 1,
-      offset: false,
-      z: 0
-    },
-    ticks: {
-      ...Chart.defaults.scale.ticks,
-      sampleSize: 7,
-      align: 'center' as Align,
-      autoSkip: true,
-      autoSkipPadding: 0,
-      crossAlign: 'near' as const,
-      includeBounds: false,
-      labelOffset: 0,
-      minRotation: 0,
-      maxRotation: 0, 
-      mirror: false,
-      maxTicksLimit: 11,
-      display: true,
-      color: colors.textSecondary,
-      font: { size: 10, family: "'Inter', sans-serif", style: 'normal', weight: 'normal', lineHeight: 1.2 }, 
-      padding: 3, 
-      major: { enabled: false },
-      showLabelBackdrop: false,
-      backdropColor: 'rgba(0,0,0,0)', 
-      backdropPadding: 0,
-      textStrokeColor: '',
-      textStrokeWidth: 0,
-      z: 0,
-      callback: function(this: Scale, value: string | number, index: number, ticks: Tick[]) {
-        const label = this.getLabelForValue(Number(value));
-        return label.length > 15 ? label.substring(0,12) + '...' : label; 
-      }
-    }
-  };
-
-  const yScaleOptions: CartesianScaleOptions = {
-    ...Chart.defaults.scales.linear,
-    min: 0,
-    max: 0,
-    axis: 'y',
-    bounds: 'ticks',
-    position: 'left',
-    offset: false,
-    title: {
-      display: false,
-      text: '',
-      align: 'center',
-      color: colors.textSecondary,
-      font: { size: 12, family: "'Inter', sans-serif", style: 'normal', weight: 'bold' },
-      padding: { top: 10, bottom: 10, y: 0 }
-    },
-    border: {
-      display: false,
-      color: colors.textSecondary + '30',
-      width: 1,
-      dash: [],
-      dashOffset: 0,
-      z: 0
-    },
-    grid: {
-      display: true,
-      drawOnChartArea: true,
-      color: colors.textSecondary + '30',
-      lineWidth: 1,
-      drawTicks: true,
-      tickBorderDash: [],
-      tickBorderDashOffset: 0,
-      tickColor: colors.textSecondary + '30',
+      tickColor: `${colors.textSecondary.slice(0, -1)}, 0.3)`,
       tickLength: 8,
       tickWidth: 1,
       offset: false,
@@ -523,8 +469,77 @@ const getCartesianChartOptions = <T extends 'line' | 'bar'>() => {
       maxTicksLimit: 11,
       display: true,
       color: colors.textSecondary,
-      font: { size: 10, family: "'Inter', sans-serif", style: 'normal', weight: 'normal', lineHeight: 1.2 }, 
-      padding: 3, 
+      font: { size: 10, family: "'Inter', sans-serif", style: 'normal', weight: 'normal', lineHeight: 1.2 },
+      padding: 3,
+      major: { enabled: false },
+      showLabelBackdrop: false,
+      backdropColor: 'rgba(0,0,0,0)',
+      backdropPadding: 0,
+      textStrokeColor: '',
+      textStrokeWidth: 0,
+      z: 0,
+      callback: function(this: Scale, value: string | number, index: number, ticks: Tick[]) {
+        const label = this.getLabelForValue(Number(value));
+        return label.length > 15 ? label.substring(0,12) + '...' : label;
+      }
+    }
+  };
+
+  const yScaleOptions: CartesianScaleOptions = {
+    ...Chart.defaults.scales.linear,
+    min: undefined, // Let Chart.js determine min/max
+    max: undefined, // Let Chart.js determine min/max
+    axis: 'y',
+    bounds: 'ticks',
+    position: 'left',
+    offset: false,
+    title: {
+      display: false,
+      text: '',
+      align: 'center',
+      color: colors.textSecondary,
+      font: { size: 12, family: "'Inter', sans-serif", style: 'normal', weight: 'bold' },
+      padding: { top: 10, bottom: 10, y: 0 }
+    },
+    border: {
+      display: false,
+      color: `${colors.textSecondary.slice(0, -1)}, 0.3)`, // Lighter border color for consistency
+      width: 1,
+      dash: [],
+      dashOffset: 0,
+      z: 0
+    },
+    grid: {
+      display: true,
+      drawOnChartArea: true,
+      color: `${colors.textSecondary.slice(0, -1)}, 0.3)`,
+      lineWidth: 1,
+      drawTicks: true,
+      tickBorderDash: [],
+      tickBorderDashOffset: 0,
+      tickColor: `${colors.textSecondary.slice(0, -1)}, 0.3)`,
+      tickLength: 8,
+      tickWidth: 1,
+      offset: false,
+      z: 0
+    },
+    ticks: {
+      ...Chart.defaults.scale.ticks,
+      sampleSize: 7,
+      align: 'center' as Align,
+      autoSkip: true,
+      autoSkipPadding: 0,
+      crossAlign: 'near' as const,
+      includeBounds: false,
+      labelOffset: 0,
+      minRotation: 0,
+      maxRotation: 0,
+      mirror: false,
+      maxTicksLimit: 11,
+      display: true,
+      color: colors.textSecondary,
+      font: { size: 10, family: "'Inter', sans-serif", style: 'normal', weight: 'normal', lineHeight: 1.2 },
+      padding: 3,
       major: { enabled: false },
       showLabelBackdrop: false,
       backdropColor: 'rgba(0,0,0,0)',
@@ -613,6 +628,8 @@ const createBarChartOptions = (): ChartOptions<'bar'> => {
   };
 };
 
+// Removed duplicate Piecolors and pieChartData here
+
 const createPieChartOptions = (): ChartOptions<'pie' | 'doughnut'> => {
   const base = getBaseChartOptions<'pie'>();
   return {
@@ -622,6 +639,9 @@ const createPieChartOptions = (): ChartOptions<'pie' | 'doughnut'> => {
       legend: {
         ...base.plugins?.legend,
         position: 'right' as const,
+        labels: {
+          color: colors.textPrimary, // Ensure legend labels have color
+        }
       },
       title: {
         display: true,
@@ -632,6 +652,18 @@ const createPieChartOptions = (): ChartOptions<'pie' | 'doughnut'> => {
       }
     },
     cutout: '70%',
+    // For pie/doughnut charts, scales are generally not needed, but
+    // if you had them, their colors would also be set using `colors.textPrimary` or similar.
+    scales: {
+      // x: {
+      //   ticks: { color: colors.textPrimary },
+      //   grid: { color: 'rgba(0,0,0,0.1)' }
+      // },
+      // y: {
+      //   ticks: { color: colors.textPrimary },
+      //   grid: { color: 'rgba(0,0,0,0.1)' }
+      // }
+    }
   } as ChartOptions<'pie'>;
 };
 
@@ -789,6 +821,7 @@ const ChartsPage: React.FC = () => {
             <Card className="p-6 bg-card border border-border">
               <h2 className="text-xl font-semibold mb-4">Spending by Platform</h2>
               <div className="h-72 flex items-center justify-center">
+                {/* Use the correct data for the pie chart */}
                 <Pie data={spendingByPlatformData} options={spendingPieOptions} />
               </div>
               <p className="text-sm text-muted-foreground mt-4">
@@ -866,6 +899,7 @@ const ChartsPage: React.FC = () => {
                           <span>Bought {item.count}x</span>
                           <span className="mx-2">•</span>
                           <span className="flex items-center">
+                             {/* Safely access color property, ensuring it exists before using */}
                             <span className="w-2 h-2 rounded-full mr-1" style={{ backgroundColor: colors[item.bestPlatform.toLowerCase() as keyof typeof colors] || colors.textSecondary }}></span>
                             {item.bestPlatform}
                           </span>
@@ -886,9 +920,9 @@ const ChartsPage: React.FC = () => {
           <Card className="p-6 bg-card border border-border mb-8">
             <h2 className="text-xl font-semibold mb-4">Product Price Comparison</h2>
             <div className="h-80">
-              <Bar 
-                data={createProductComparisonData(frequentItems[0])} 
-                options={createProductComparisonOptions(frequentItems[0].name)} 
+              <Bar
+                data={createProductComparisonData(frequentItems[0])}
+                options={createProductComparisonOptions(frequentItems[0].name)}
               />
             </div>
             <p className="text-sm text-slate-400 mt-3 flex items-center">
@@ -981,15 +1015,17 @@ const ChartsPage: React.FC = () => {
                     <p className="text-sm text-muted-foreground mt-1">
                       Avg. price: ₹{item.avgPrice}
                     </p>
-                  </div>
-
-                  <div className="flex flex-col items-end">
-                    <span className="text-xs text-muted-foreground">Best deals on:</span>
-                    <div className="flex items-center mt-1">
-                      <TrendingUp size={14} className="text-primary mr-1" />
-                      <span className="text-primary text-sm">{item.bestPlatform}</span>
-                      <ChevronRight size={16} className="text-muted-foreground ml-1" />
+                    {/* Add product comparison bar chart here */}
+                    <div className="mt-2 h-32 w-full"> {/* Adjust height as needed */}
+                       <Bar
+                         data={createProductComparisonData(item)}
+                         options={createProductComparisonOptions(item.name)}
+                       />
                     </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="font-medium">₹{item.bestPrice}</p>
+                    <p className="text-xs text-primary">Save ₹{item.savings} each</p>
                   </div>
                 </Card>
               ))}
