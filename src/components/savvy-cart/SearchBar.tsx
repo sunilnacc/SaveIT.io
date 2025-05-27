@@ -30,7 +30,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, isLoading }) => {
         className="text-base"
         disabled={isLoading}
       />
-      <Button type="submit" variant="primary" size="lg" disabled={isLoading}>
+      <Button type="submit" variant="default" size="lg" disabled={isLoading}>
         <Search className="mr-2 h-5 w-5" />
         Search
       </Button>

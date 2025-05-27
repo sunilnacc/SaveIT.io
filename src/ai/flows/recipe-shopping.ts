@@ -262,7 +262,12 @@ function simplifyIngredientName(ingredient: string): string {
     // Lentils and beans
     'white urad dal': 'urad dal',
     'whole white urad dal': 'urad dal',
-    'urad dal': 'urad dal'
+    'urad dal': 'urad dal',
+
+    // Eggs
+    'Large eggs': 'egg',
+    'Counted eggs': 'egg',
+    'Dozen eggs': 'egg'
   };
   
   // Check for matches in simplifications

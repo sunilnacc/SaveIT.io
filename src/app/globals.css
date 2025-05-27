@@ -26,24 +26,8 @@ body {
 
     --muted: 60 30% 97%; /* Very light warm white */
     --muted-foreground: 30 10% 40%; /* Muted brown */
-    
-    --accent: 39 70% 60%; /* Warm peach/orange */
-    --accent-foreground: 0 0% 100%;
-    
-    --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 100%;
-    
-    --border: 75 20% 90%; /* Light sage border */
-    --input: 75 20% 90%;
-    --ring: 76 31% 58%; /* Sage green for focus */
-    
-    /* Chart colors from the palette */
-    --chart-1: 76 31% 58%;  /* Sage green */
-    --chart-2: 75 50% 82%;  /* Light sage */
-    --chart-3: 39 70% 60%;  /* Warm peach */
-    --chart-4: 30 50% 70%;  /* Light brown */
-    --chart-5: 30 20% 40%;  /* Dark brown */
 
+    /* Consolidated and unique accent, destructive, border, input, ring */
     --accent: 350 30% 34%; /* Wine */
     --accent-foreground: 0 0% 100%;
 
@@ -57,7 +41,7 @@ body {
     --radius: 0.75rem; /* Slightly rounded corners */
 
     /* Chart colors - earth tones */
-    --chart-1: 63 28% 72%;  /* Sage */
+    --chart-1: 63 28% 72%;   /* Sage */
     --chart-2: 39 100% 83%;  /* Peach yellow */
     --chart-3: 8 70% 62%;    /* Bittersweet */
     --chart-4: 350 30% 34%;  /* Wine */
@@ -105,11 +89,11 @@ body {
     --ring: 76 31% 58%; /* Sage green for focus */
 
     /* Chart colors */
-    --chart-1: 76 31% 58%;  /* Sage green */
-    --chart-2: 75 50% 40%;  /* Muted sage */
-    --chart-3: 39 70% 60%;  /* Warm peach */
-    --chart-4: 30 50% 50%;  /* Warm brown */
-    --chart-5: 30 20% 30%;  /* Dark brown */
+    --chart-1: 76 31% 58%;   /* Sage green */
+    --chart-2: 75 50% 40%;   /* Muted sage */
+    --chart-3: 39 70% 60%;   /* Warm peach */
+    --chart-4: 30 50% 50%;   /* Warm brown */
+    --chart-5: 30 20% 30%;   /* Dark brown */
 
     /* Sidebar */
     --sidebar-background: 30 15% 10%;
@@ -190,4 +174,43 @@ body {
 
 .glow-on-hover:hover::before {
   box-shadow: 0 0 15px hsl(var(--primary) / 0.4);
+}
+
+/* Typing indicator animation */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+}
+
+.typing-indicator span {
+  height: 8px;
+  width: 8px;
+  margin: 0 2px;
+  background-color: hsl(var(--primary));
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.7;
+}
+
+.typing-indicator span:nth-child(1) {
+  animation: bounce 1.2s infinite 0.1s;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation: bounce 1.2s infinite 0.3s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation: bounce 1.2s infinite 0.5s;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+    opacity: 1;
+  }
 }
