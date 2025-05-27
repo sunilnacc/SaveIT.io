@@ -60,7 +60,7 @@ export default function RootLayout({
           max-query-length="-1">
           {/* @ts-ignore ts(2322) TODO: Add custom element type declarations if needed */}
           <df-messenger-chat-bubble
-            chat-title="prodagent">
+            chat-title="SaveIT AI Assistant">
           </df-messenger-chat-bubble>
         </df-messenger>
         
